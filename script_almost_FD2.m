@@ -9,7 +9,7 @@ param.a_space = [1,0];
 param.min_z = 0;
 param.max_z = 1;
 
-param.gamma.gamma_a = 0.1;
+param.gamma.gamma_a = 5;
 param.min_omega = -1;
 param.max_omega = 1;
 param.gamma.z_0 = 0; %Parameters of z_j transition

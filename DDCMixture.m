@@ -645,6 +645,61 @@ classdef DDCMixture
         %--------------------------------------------------------------------------------
         % **************      Single Type Estimation      *****************
         %--------------------------------------------------------------------------------
+        function [logl, p1,ll_1]  =  ll_EE_s(theta_vec,datasim,p1,S1,invF)
+            eul = 0.5772156649;
+            a = reshape(datasim.at,S1.N*S1.T,1);
+            z = reshape(datasim.zt,S1.N*S1.T,1);
+            y = reshape(datasim.yt,S1.N*S1.T,1);
+            [n_state,d_state] = size(S1.state);
+            ind = (y - 1) * n_state + z ;
+            F_0 = kron([0,1;0,1],S1.P{2});
+            F_1 = kron([1,0;1,0],S1.P{1});
+            F_til = F_1 - F_0;
+            
+            p1 = vec(p1);
+            pi_1       = DDCMixture.dpidth(S1) * theta_vec ;
+            
+            % v_til_1 = pi_1 + S1.beta * [S1.P{1},-S1.P{2};S1.P{1},-S1.P{2}] * invF * (eul - log(1 - p1_1(:) ));
+            tmp_1 = pi_1 + S1.beta  * F_til *  invF * (eul - log(1 - p1)); 
+            
+            p1_1 = exp(tmp_1) ./ (1 + exp(tmp_1));
+            data_p_1 = p1_1(ind);
+            ll_1  = sum(reshape([a==1].*log(data_p_1) + [a==2].*log(1 - data_p_1),S1.N,S1.T),2);
+           
+            logl = sum(ll_1);
+            if nargout > 1
+                p1 = reshape(p1_1,n_state * 2,1);
+            end
+        end
+        
+        function [logl, p1,ll_1]  =  ll_HM_s(theta_vec,datasim,p1,S1)
+            eul = 0.5772156649;
+            a = reshape(datasim.at,S1.N*S1.T,1);
+            z = reshape(datasim.zt,S1.N*S1.T,1);
+            y = reshape(datasim.yt,S1.N*S1.T,1);
+            [n_state,d_state] = size(S1.state);
+            ind = (y - 1) * n_state + z ;
+            F_0 = kron([0,1;0,1],S1.P{2});
+            F_1 = kron([1,0;1,0],S1.P{1});
+            F_til = F_1 - F_0;
+            
+            p1 = vec(p1);
+            pi_1       = DDCMixture.dpidth(S1) * theta_vec ;
+            pi_P       = pi_1 .*  p1;
+            F_P        = diag(p1) * F_til + F_0;
+            invF       = inv(eye(size(F_P,2)) - S1.beta * F_P);
+            % v_til_1 = pi_1 + S1.beta * [S1.P{1},-S1.P{2};S1.P{1},-S1.P{2}] * invF * (eul - log(1 - p1_1(:) ));
+            tmp_1 = pi_1 + S1.beta  * F_til *  invF * pi_P; 
+            
+            p1_1 = exp(tmp_1) ./ (1 + exp(tmp_1));
+            data_p_1 = p1_1(ind);
+            ll_1  = sum(reshape([a==1].*log(data_p_1) + [a==2].*log(1 - data_p_1),S1.N,S1.T),2);
+           
+            logl = sum(ll_1);
+            if nargout > 1
+                p1 = reshape(p1_1,n_state * 2,1);
+            end
+        end
         
         function [logl, p1,ll_1] =  ll_FD_s(theta_vec,datasim,p1,S1,p_star)
             %update using finite dependence
@@ -653,7 +708,6 @@ classdef DDCMixture
             y = reshape(datasim.yt,S1.N*S1.T,1);
             [n_state,d_state] = size(S1.state);
             ind = (y - 1) * n_state + z ;
-            ccp_1 = reshape(p1,n_state,2);
             
             F_0 = kron([0,1;0,1],S1.P{2});
             F_1 = kron([1,0;1,0],S1.P{1});
@@ -695,35 +749,90 @@ classdef DDCMixture
             iter      = 0;
 
             fprintf('Solving using Finite Dependence\n');
-            p1_1 = ones(S1.n_state,S1.n_action)/S1.n_action;
+            p1_1 = ones(S1.n_state,S1.n_action)/S1.n_action; %The initial CCP
             
-            ll_function   = @DDCMixture.ll_FD_s;
-            
-            while (diff > opt.tol)
-                ts = tic;
-                %STEP 2: Then estimate the theta using the mixture weight
-                f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,p_star)); %Make sure the solver works
+            if string(opt.method) == 'FD'
                 
-                theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
-                if opt.output > 0
-                    fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
-                end                %STEP3: Update the weight using the theta
-                %STEP 3: Update weight and q
-                [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,p_star);
+                ll_function   = @DDCMixture.ll_FD_s;
 
-                diff = max(abs(vec(p1_1) - vec(p1) ));
-                
-                % STEP 4: Update conditional choice probability
-                theta_vec0 = theta_vec;
-                p1_1 = p1;
-                iter = iter + 1;
-                if iter > opt.max_iter
-                    break;
+                while (diff > opt.tol)
+                    ts = tic;
+                    %STEP 2: Then estimate the theta using the mixture weight
+                    f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,p_star)); %Make sure the solver works
+
+                    theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
+                    if opt.output > 0
+                        fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
+                    end                %STEP3: Update the weight using the theta
+                    %STEP 3: Update weight and q
+                    [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,p_star);
+
+                    diff = max(abs(vec(p1_1) - vec(p1) ));
+
+                    % STEP 4: Update conditional choice probability
+                    theta_vec0 = theta_vec;
+                    p1_1 = p1;
+                    iter = iter + 1;
+                    if iter > opt.max_iter
+                        break;
+                    end
                 end
-            end
-
+            
+            elseif string(opt.method) == 'EE'
+                F_size = size(S1.P{2});
+                F0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
+                size_n_state = S1.n_state * S1.n_action;
+                invF =  inv(eye(size_n_state) - S1.beta * F0);
+                p1_1 = ones(S1.n_state,S1.n_action)/S1.n_action;
+                ll_function   = @DDCMixture.ll_EE_s;
+                fprintf('Solving using Euler Equation\n');
+                
+                while (diff > opt.tol)
+                    ts = tic;
+                    f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,invF)); 
+                    theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
+                    if opt.output > 0
+                        fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
+                    end
+                    [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,invF);
+                    diff = max(abs(vec(p1_1) - vec(p1) ));
+                    % STEP 4: Update conditional choice probability
+                    theta_vec0 = theta_vec;
+                    p1_1 = p1;
+                    iter = iter + 1;
+                    if iter > opt.max_iter
+                        break;
+                    end
+                end
+            
+            elseif string(opt.method) == 'HM'
+                F_size = size(S1.P{2});
+                F0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
+                size_n_state = S1.n_state * S1.n_action;
+                p1_1 = ones(S1.n_state,S1.n_action)/S1.n_action;
+                ll_function   = @DDCMixture.ll_HM_s;
+                fprintf('Solving using Hotz-Miller Inversion\n');
+                
+                while (diff > opt.tol)
+                    ts = tic;
+                    f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1)); 
+                    theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
+                    if opt.output > 0
+                        fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
+                    end
+                    [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1);
+                    diff = max(abs(vec(p1_1) - vec(p1) ));
+                    % STEP 4: Update conditional choice probability
+                    theta_vec0 = theta_vec;
+                    p1_1 = p1;
+                    iter = iter + 1;
+                    if iter > opt.max_iter
+                        break;
+                    end
+                end
+            end %end of if for type
             theta_hat = theta_vec;
+
         end %End of Mixture.sequential_EE
-        
     end
 end 
