@@ -1,0 +1,63 @@
+1000 simulations
+Number of state space : 64
+\begin{table}                                                                                                                    
+\centering                                                                                                                       
+\begin{tabular}{cccccccc}                                                                                                        
+ & $\theta_0^{VP}$ & $\theta_1^{VP}$ & $\theta_2^{VP}$ & $\theta_0^{FC}$ & $\theta_1^{FC}$ & $\theta_0^{EC}$ & $\theta_1^{EC}$ \\
+DGP & 0.50000 & 1.00000 & -1.00000 & 0.50000 & 1.00000 & 1.00000 & 1.00000 \\                                                    
+NFXP & 0.50161 & 1.00410 & -1.00346 & 0.50227 & 1.00015 & 1.00066 & 1.00138 \\                                                   
+ & 0.03388 & 0.04687 & 0.04276 & 0.05573 & 0.06735 & 0.07243 & 0.09933 \\                                                        
+EE & 0.50233 & 1.00366 & -1.00305 & 0.50632 & 0.99997 & 1.00064 & 1.00140 \\                                                     
+ & 0.03472 & 0.04698 & 0.04288 & 0.05865 & 0.06749 & 0.07246 & 0.09970 \\                                                        
+FD & 0.52766 & 1.00888 & -1.00966 & 0.37552 & 0.99905 & 1.01453 & 1.00082 \\                                                     
+ & 0.03770 & 0.04683 & 0.04275 & 0.06309 & 0.06790 & 0.07285 & 0.10003 \\                                                        
+SEQ & 0.50461 & 1.00175 & -1.00158 & 0.49756 & 0.99855 & 1.00121 & 1.00031 \\                                                    
+ & 0.03515 & 0.04689 & 0.04276 & 0.05557 & 0.06741 & 0.07235 & 0.09961 \\                                                        
+SEQ-EE & 0.50461 & 1.00175 & -1.00158 & 0.49756 & 0.99855 & 1.00121 & 1.00031 \\                                                 
+ & 0.03515 & 0.04689 & 0.04276 & 0.05557 & 0.06741 & 0.07235 & 0.09961 \\                                                        
+\end{tabular}                                                                                                                    
+\caption{Simulation results for the market Entry Exit Problem(Two type mixture)}                                                 
+\label{table:MyTableLabel}                                                                                                       
+\end{table}                                                                                                                      
+\begin{table}                                                                                                                    
+\centering                                                                                                                       
+\begin{tabular}{cccccccc}                                                                                                        
+ & $\theta_0^{VP}$ & $\theta_1^{VP}$ & $\theta_2^{VP}$ & $\theta_0^{FC}$ & $\theta_1^{FC}$ & $\theta_0^{EC}$ & $\theta_1^{EC}$ \\
+NFXP & 0.02700 & 0.03749 & 0.03377 & 0.04398 & 0.05325 & 0.05743 & 0.07831 \\                                                    
+EE & 0.02761 & 0.03766 & 0.03397 & 0.04654 & 0.05337 & 0.05757 & 0.07873 \\                                                      
+FD & 0.03728 & 0.03812 & 0.03443 & 0.12584 & 0.05401 & 0.05886 & 0.07875 \\                                                      
+SEQ & 0.02812 & 0.03752 & 0.03389 & 0.04406 & 0.05336 & 0.05746 & 0.07860 \\                                                     
+SEQ-EE & 0.02812 & 0.03752 & 0.03389 & 0.04406 & 0.05336 & 0.05746 & 0.07860 \\                                                  
+\end{tabular}                                                                                                                    
+\caption{Average Deviation of Entry Exit Problem(Two type mixture)}                                                              
+\label{table:MyTableLabel}                                                                                                       
+\end{table}                                                                                                                      
+{´øÓÐÏÂ±êµÄ¸³ÖµÎ¬¶È²»Æ¥Åä¡£
+
+³ö´í <a href="matlab:matlab.internal.language.introspective.errorDocCallback('latexTable', 'C:\Users\haoja\Google ÔÆ¶ËÓ²ÅÌ\miaomiaomiao!\miaomiao_project\EntryExit\MixtureModel_NFD\latexTable.m', 167)" style="font-weight:bold">latexTable</a> (<a href="matlab: opentoline('C:\Users\haoja\Google ÔÆ¶ËÓ²ÅÌ\miaomiaomiao!\miaomiao_project\EntryExit\MixtureModel_NFD\latexTable.m',167,0)">line 167</a>)
+    C(1,1+rowLabelsExist:end)=input.tableColLabels;
+
+³ö´í <a href="matlab:matlab.internal.language.introspective.errorDocCallback('script_two_type_mixture', 'C:\Users\haoja\Google ÔÆ¶ËÓ²ÅÌ\miaomiaomiao!\miaomiao_project\EntryExit\MixtureModel_NFD\script_two_type_mixture.m', 196)" style="font-weight:bold">script_two_type_mixture</a> (<a href="matlab: opentoline('C:\Users\haoja\Google ÔÆ¶ËÓ²ÅÌ\miaomiaomiao!\miaomiao_project\EntryExit\MixtureModel_NFD\script_two_type_mixture.m',196,0)">line 196</a>)
+latexTable(input);
+} 
+opentoline('C:\Users\haoja\Google ÔÆ¶ËÓ²ÅÌ\miaomiaomiao!\miaomiao_project\EntryExit\MixtureModel_NFD\latexTable.m',167,0)
+matlab.internal.language.introspective.errorDocCallback('script_two_type_mixture', 'C:\Users\haoja\Google ÔÆ¶ËÓ²ÅÌ\miaomiaomiao!\miaomiao_project\EntryExit\MixtureModel_NFD\script_two_type_mixture.m', 196)
+opentoline('C:\Users\haoja\Google ÔÆ¶ËÓ²ÅÌ\miaomiaomiao!\miaomiao_project\EntryExit\MixtureModel_NFD\script_two_type_mixture.m',196,0)
+¸³Öµ¾ßÓÐµÄ·Çµ¥Ò» rhs Î¬¶È¶àÓÚ·Çµ¥Ò»ÏÂ±êÊý
+
+³ö´í <a href="matlab:matlab.internal.language.introspective.errorDocCallback('latexTable', 'C:\Users\haoja\Google ÔÆ¶ËÓ²ÅÌ\miaomiaomiao!\miaomiao_project\EntryExit\MixtureModel_NFD\latexTable.m', 164)" style="font-weight:bold">latexTable</a> (<a href="matlab: opentoline('C:\Users\haoja\Google ÔÆ¶ËÓ²ÅÌ\miaomiaomiao!\miaomiao_project\EntryExit\MixtureModel_NFD\latexTable.m',164,0)">line 164</a>)
+    C(1+colLabelsExist:end,1)=input.tableRowLabels';
+
+³ö´í <a href="matlab:matlab.internal.language.introspective.errorDocCallback('script_two_type_mixture', 'C:\Users\haoja\Google ÔÆ¶ËÓ²ÅÌ\miaomiaomiao!\miaomiao_project\EntryExit\MixtureModel_NFD\script_two_type_mixture.m', 197)" style="font-weight:bold">script_two_type_mixture</a> (<a href="matlab: opentoline('C:\Users\haoja\Google ÔÆ¶ËÓ²ÅÌ\miaomiaomiao!\miaomiao_project\EntryExit\MixtureModel_NFD\script_two_type_mixture.m',197,0)">line 197</a>)
+latexTable(input);
+
+\begin{table}                                                      
+\centering                                                         
+\begin{tabular}{cccccc}                                            
+ & NFXP & EE & FD & SEQ & SEQ-EE \\                                
+time & 9.18458 & 0.87919 & 0.77553 & 0.91213 & 0.89370 \\          
+iter & 4.61300 & 4.65100 & 5.09000 & 5.38000 & 0.89370 \\          
+\end{tabular}                                                      
+\caption{Average Deviation of Entry Exit Problem(Two type mixture)}
+\label{table:MyTableLabel}                                         
+\end{table}                                                        

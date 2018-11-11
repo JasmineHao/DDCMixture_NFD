@@ -1,0 +1,44 @@
+50 simulations
+Number of state space : 6250
+\begin{table}                                                                                                                    
+\centering                                                                                                                       
+\begin{tabular}{cccccccc}                                                                                                        
+ & $\theta_0^{VP}$ & $\theta_1^{VP}$ & $\theta_2^{VP}$ & $\theta_0^{FC}$ & $\theta_1^{FC}$ & $\theta_0^{EC}$ & $\theta_1^{EC}$ \\
+DGP & 0.50000 & 1.00000 & -1.00000 & 0.50000 & 1.00000 & 1.00000 & 1.00000 \\                                                    
+NFXP & 0.00000 & 0.00000 & 0.00000 & 0.00000 & 0.00000 & 0.00000 & 0.00000 \\                                                    
+ & 0.00000 & 0.00000 & 0.00000 & 0.00000 & 0.00000 & 0.00000 & 0.00000 \\                                                        
+EE & 0.00000 & 0.00000 & 0.00000 & 0.00000 & 0.00000 & 0.00000 & 0.00000 \\                                                      
+ & 0.00000 & 0.00000 & 0.00000 & 0.00000 & 0.00000 & 0.00000 & 0.00000 \\                                                        
+FD & 0.59401 & 1.02969 & -1.03230 & 0.41497 & 1.00364 & 1.01477 & 1.01031 \\                                                     
+ & 0.05161 & 0.06206 & 0.06431 & 0.06550 & 0.08854 & 0.07725 & 0.10120 \\                                                        
+SEQ & 0.50255 & 0.99303 & -0.99993 & 0.48513 & 1.00202 & 1.00843 & 1.01174 \\                                                    
+ & 0.04473 & 0.05806 & 0.06211 & 0.05818 & 0.08836 & 0.07775 & 0.10087 \\                                                        
+SEQ-EE & 0.50255 & 0.99303 & -0.99993 & 0.48513 & 1.00202 & 1.00843 & 1.01174 \\                                                 
+ & 0.04473 & 0.05806 & 0.06211 & 0.05818 & 0.08836 & 0.07775 & 0.10087 \\                                                        
+\end{tabular}                                                                                                                    
+\caption{Simulation results for the market Entry Exit Problem(Two type mixture)}                                                 
+\label{table:MyTableLabel}                                                                                                       
+\end{table}                                                                                                                      
+\begin{table}                                                                                                                    
+\centering                                                                                                                       
+\begin{tabular}{cccccccc}                                                                                                        
+ & $\theta_0^{VP}$ & $\theta_1^{VP}$ & $\theta_2^{VP}$ & $\theta_0^{FC}$ & $\theta_1^{FC}$ & $\theta_0^{EC}$ & $\theta_1^{EC}$ \\
+NFXP & 0.50000 & 1.00000 & 1.00000 & 0.50000 & 1.00000 & 1.00000 & 1.00000 \\                                                    
+EE & 0.50000 & 1.00000 & 1.00000 & 0.50000 & 1.00000 & 1.00000 & 1.00000 \\                                                      
+FD & 0.09476 & 0.05515 & 0.05784 & 0.08909 & 0.06319 & 0.06243 & 0.07969 \\                                                      
+SEQ & 0.03526 & 0.04361 & 0.04862 & 0.04546 & 0.06424 & 0.06187 & 0.07882 \\                                                     
+SEQ-EE & 0.03526 & 0.04361 & 0.04862 & 0.04546 & 0.06424 & 0.06187 & 0.07882 \\                                                  
+\end{tabular}                                                                                                                    
+\caption{Average Deviation of Entry Exit Problem(Two type mixture)}                                                              
+\label{table:MyTableLabel}                                                                                                       
+\end{table}                                                                                                                      
+\begin{table}                                                      
+\centering                                                         
+\begin{tabular}{cccccc}                                            
+ & NFXP & EE & FD & SEQ & SEQ-EE \\                                
+time & 0.00000 & 0.00000 & 27.01891 & 386.92833 & 220.77832 \\     
+iter & 0.00000 & 0.00000 & 5.52000 & 5.40000 & 5.40000 \\          
+\end{tabular}                                                      
+\caption{Average Deviation of Entry Exit Problem(Two type mixture)}
+\label{table:MyTableLabel}                                         
+\end{table}                                                        
