@@ -1,0 +1,12 @@
+Error using <a href="matlab:matlab.internal.language.introspective.errorDocCallback('vertcat')" style="font-weight:bold">vertcat</a>
+Dimensions of arrays being concatenated are not consistent.
+
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('script_almost_FD2', 'C:\Users\Jasmine\Google Drive\MyProjects\DDC\DDCMixture_NFD\script_almost_FD2.m', 179)" style="font-weight:bold">script_almost_FD2</a> (<a href="matlab: opentoline('C:\Users\Jasmine\Google Drive\MyProjects\DDC\DDCMixture_NFD\script_almost_FD2.m',179,0)">line 179</a>)
+input.data = [[100 1000 10000 100000]; norm_p;norm_p_modified];
+
+norm_p
+
+norm_p =
+
+    1.0267    1.0267    1.0267
+
