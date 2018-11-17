@@ -56,8 +56,8 @@ var_HM              = [];
 var_EE              = [];
 
 
-for nM = [100 1000 10000 100000]
-    
+% for nM = [100 1000 10000 100000]
+for nM = [50]
     param.nM = nM;	
     [F_struct,state] = DDCMixture.statetransition(param);
     
@@ -118,7 +118,8 @@ for nM = [100 1000 10000 100000]
     p_default = zeros(64,1);
 
     % for i = 1:param.nMC
-    for i = 1:param.nMC
+    parfor i = 1:param.nMC
+        opt = struct()
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);
         datasim = Data{i};
         

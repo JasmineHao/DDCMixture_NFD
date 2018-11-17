@@ -685,11 +685,11 @@ classdef DDCMixture
             
             p1 = vec(p1);
             pi_1       = DDCMixture.dpidth(S1) * theta_vec ;
-            pi_P       = pi_1 .*  p1;
+            pi_P       = eul + ( pi_1 -  log(p1) ).*  p1 - log(1 - p1 ) .*(1- p1);
             F_P        = diag(p1) * F_til + F_0;
             invF       = inv(eye(size(F_P,2)) - S1.beta * F_P);
             % v_til_1 = pi_1 + S1.beta * [S1.P{1},-S1.P{2};S1.P{1},-S1.P{2}] * invF * (eul - log(1 - p1_1(:) ));
-            tmp_1 = pi_1 + S1.beta  * F_til *  invF * pi_P; 
+            tmp_1 = pi_1 + S1.beta  * F_til *  invF *  pi_P ; 
             
             p1_1 = exp(tmp_1) ./ (1 + exp(tmp_1));
             data_p_1 = p1_1(ind);

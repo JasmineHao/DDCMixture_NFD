@@ -119,7 +119,8 @@ for gamma_a = 0 : 0.5 : 2.0
     p_default = zeros(64,1);
 
     % for i = 1:param.nMC
-    for i = 1:param.nMC
+    parfor i = 1:param.nMC
+        opt = struct()
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);
         datasim = Data{i};
         
@@ -163,10 +164,12 @@ for gamma_a = 0 : 0.5 : 2.0
     average_FD_modified = [average_FD_modified  mean(abs(ResultTable_FD_modified - theta_vec'))'];
     average_EE = [average_EE  mean(abs(ResultTable_EE - theta_vec'))'];
     average_HM = [average_HM  mean(abs(ResultTable_HM - theta_vec'))'];
+
     bias_FD = [bias_FD abs(mean(ResultTable_FD - theta_vec'))'];
     bias_FD_modified = [bias_FD_modified  abs(mean(ResultTable_FD_modified - theta_vec'))'];
     bias_EE = [bias_EE abs(mean(ResultTable_EE - theta_vec'))'];
     bias_HM = [bias_HM abs(mean(ResultTable_HM - theta_vec'))'];
+    
     var_FD = [var_FD  var(ResultTable_FD )'];
     var_FD_modified = [var_FD_modified  var(ResultTable_FD_modified)'];
     var_EE = [var_EE  var(ResultTable_EE )'];
