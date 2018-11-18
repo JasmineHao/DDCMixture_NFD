@@ -39,11 +39,11 @@ end
 
 %%
 average_FD          = [];
-average_FD_modified = [];
+average_AFD = [];
 bias_FD             = [];
-bias_FD_modified    = [];
+bias_AFD    = [];
 var_FD              = [];
-var_FD_modified     = [];
+var_AFD     = [];
 norm_p              = [];
 norm_p_modified     = [];
 
@@ -95,22 +95,22 @@ for gamma_a = 0 : 0.5 : 2.0
     %     disp(Result.f_k);
     %     disp(Result.f_0);
     
-    ResultTable_FD   = zeros(param.nMC,7);
-    TimeTable_FD     = zeros(param.nMC,1);
-    IterTable_FD     = zeros(param.nMC,1);
-
-    ResultTable_FD_modified   = zeros(param.nMC,7);
-    TimeTable_FD_modified     = zeros(param.nMC,1);
-    IterTable_FD_modified     = zeros(param.nMC,1);
-
-
-    ResultTable_EE   = zeros(param.nMC,7);
-    TimeTable_EE     = zeros(param.nMC,1);
-    IterTable_EE     = zeros(param.nMC,1);
-
-    ResultTable_HM_modified   = zeros(param.nMC,7);
-    TimeTable_HM_modified     = zeros(param.nMC,1);
-    IterTable_HM_modified     = zeros(param.nMC,1);
+%     ResultTable_FD   = zeros(param.nMC,7);
+%     TimeTable_FD     = zeros(param.nMC,1);
+%     IterTable_FD     = zeros(param.nMC,1);
+% 
+%     ResultTable_AFD   = zeros(param.nMC,7);
+%     TimeTable_AFD     = zeros(param.nMC,1);
+%     IterTable_AFD     = zeros(param.nMC,1);
+% 
+% 
+%     ResultTable_EE   = zeros(param.nMC,7);
+%     TimeTable_EE     = zeros(param.nMC,1);
+%     IterTable_EE     = zeros(param.nMC,1);
+% 
+%     ResultTable_HM   = zeros(param.nMC,7);
+%     TimeTable_HM     = zeros(param.nMC,1);
+%     IterTable_HM     = zeros(param.nMC,1);
     
     norm_p = [norm_p, [Result.f_0]];
     norm_p_modified = [norm_p_modified,[Result.f_k]];
@@ -119,8 +119,9 @@ for gamma_a = 0 : 0.5 : 2.0
     p_default = zeros(64,1);
 
     % for i = 1:param.nMC
+    % Method = {'EE','HM','FD','AFD2'}
     parfor i = 1:param.nMC
-        opt = struct()
+        opt = struct();
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);
         datasim = Data{i};
         
@@ -153,29 +154,41 @@ for gamma_a = 0 : 0.5 : 2.0
         ts = tic;
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,S1,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
-        ResultTable_FD_modified(i,:) = theta_hat;
-        IterTable_FD_modified(i) = iter;
-        TimeTable_FD_modified(i) = TimeEstimation;    
+        ResultTable_AFD(i,:) = theta_hat;
+        IterTable_AFD(i) = iter;
+        TimeTable_AFD(i) = TimeEstimation;    
        
-        
+
+        % The two step AFD with error correctoin
+        opt.method = 'AFD2';
+        ts = tic;
+        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,S1,theta_vec0,p_star,opt);
+        TimeEstimation =  toc(ts);
+        ResultTable_AFD2(i,:) = theta_hat;
+        IterTable_AFD2(i) = iter;
+        TimeTable_AFD2(i) = TimeEstimation;    
+
     end
 
     average_FD = [average_FD  mean(abs(ResultTable_FD - theta_vec'))'];
-    average_FD_modified = [average_FD_modified  mean(abs(ResultTable_FD_modified - theta_vec'))'];
+    average_AFD = [average_AFD  mean(abs(ResultTable_AFD - theta_vec'))'];
+    average_AFD2 = [average_AFD2  mean(abs(ResultTable_AFD2 - theta_vec'))'];
     average_EE = [average_EE  mean(abs(ResultTable_EE - theta_vec'))'];
     average_HM = [average_HM  mean(abs(ResultTable_HM - theta_vec'))'];
 
     bias_FD = [bias_FD abs(mean(ResultTable_FD - theta_vec'))'];
-    bias_FD_modified = [bias_FD_modified  abs(mean(ResultTable_FD_modified - theta_vec'))'];
+    bias_AFD = [bias_AFD  abs(mean(ResultTable_AFD - theta_vec'))'];
+    bias_AFD2 = [bias_AFD2  abs(mean(ResultTable_AFD2 - theta_vec'))'];
     bias_EE = [bias_EE abs(mean(ResultTable_EE - theta_vec'))'];
     bias_HM = [bias_HM abs(mean(ResultTable_HM - theta_vec'))'];
     
     var_FD = [var_FD  var(ResultTable_FD )'];
-    var_FD_modified = [var_FD_modified  var(ResultTable_FD_modified)'];
+    var_AFD = [var_AFD  var(ResultTable_AFD)'];
+    var_AFD2 = [var_AFD  var(ResultTable_AFD2)'];
     var_EE = [var_EE  var(ResultTable_EE )'];
     var_HM = [var_HM  var(ResultTable_HM )'];
 end
-
+%%
 diarystr = sprintf('diary/AFD%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
 diary(diarystr);
 
@@ -191,21 +204,21 @@ input.tableRowLabels = {'$\theta_0^{VP}$', '$\theta_1^{VP}$', ...
 input.tableColLabels =  num2cell(0 : 0.5 : 2.0) ;
 
 
-input.data = average_FD;
-input.tableCaption = 'The average deviation of finite dependence estimator';
-latexTable(input);
-
-input.data = average_FD_modified;
-input.tableCaption = 'The average deviation of almost finite dependence estimator';
-latexTable(input);
-
-input.data = average_EE;
-input.tableCaption = 'The average deviation of EE estimator';
-latexTable(input);
-
-input.data = average_HM;
-input.tableCaption = 'The average deviation of HM dependence estimator';
-latexTable(input);
+% input.data = average_FD;
+% input.tableCaption = 'The average deviation of finite dependence estimator';
+% latexTable(input);
+% 
+% input.data = average_AFD;
+% input.tableCaption = 'The average deviation of almost finite dependence estimator';
+% latexTable(input);
+% 
+% input.data = average_EE;
+% input.tableCaption = 'The average deviation of EE estimator';
+% latexTable(input);
+% 
+% input.data = average_HM;
+% input.tableCaption = 'The average deviation of HM dependence estimator';
+% latexTable(input);
 
 
 
@@ -215,9 +228,15 @@ input.tableCaption = 'The bias and variance of finite dependence estimator';
 latexVarianceTable(input);
 
 
-input.data    = bias_FD_modified;
-input.variance= var_FD_modified;
+input.data    = bias_AFD;
+input.variance= var_AFD;
 input.tableCaption = 'The bias and variance of almost finite dependence estimator';
+latexVarianceTable(input);
+
+
+input.data    = bias_AFD2;
+input.variance= var_AFD2;
+input.tableCaption = 'The bias and variance of 2-step almost finite dependence estimator';
 latexVarianceTable(input);
 
 input.data    = bias_EE;
@@ -231,6 +250,13 @@ input.tableCaption = 'The bias and variance of HM estimator';
 latexVarianceTable(input);
 
 
+average_time = [mean(TimeTable_HM),mean(TimeTable_EE),mean(TimeTable_FD),mean(TimeTable_AFD),mean(TimeTable_AFD2);
+                mean(IterTable_HM),mean(IterTable_EE),mean(IterTable_FD),mean(IterTable_AFD),mean(IterTable_AFD2)];
+input.data = average_time;
+input.tableColLabels = {'HM','EE','FD','AFD','AFD2'};
+input.tableRowLabels = {'Average Time','Average Iter'};
+input.tableCaption = 'The averaged time used';
+latexTable(input);
 diary off;
 
 % Prob = conAssign(f, g, H, HessPattern, x_L, x_U, Name, x_0, ...
