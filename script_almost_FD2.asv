@@ -1,4 +1,4 @@
-param.nMC = 500;
+param.nMC = 50;
 param.nT = 120;
 param.nM = 50;	
 param.nGrid = 2;  %number of states for each z_j
@@ -193,8 +193,8 @@ for gamma_a = 0 : 0.5 : 2.0
     var_EE = [var_EE  var(ResultTable_EE )'];
     var_HM = [var_HM  var(ResultTable_HM )'];
 end
-
-diarystr = sprintf('diary/AFD_test1_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
+%%
+diarystr = sprintf('diary/AFD%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
 delete(diarystr);
 diary(diarystr);
 
