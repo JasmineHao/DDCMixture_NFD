@@ -1,0 +1,152 @@
+\begin{table}[!htbp]                                         
+\centering                                                   
+\caption{The norm of the differences in transition densities}
+\begin{tabular}{cccc}                                        
+\hline                                                       
+ &  &  &  \\                                                 
+\hline                                                       
+$\gamma_a$ & 100.000000 & 1000.000000 & 10000.000000 \\      
+norm before modified & 1.026725 & 1.026725 & 1.026725 \\     
+norm after modified & 0.000012 & 0.000012 & 0.000012 \\      
+\hline                                                       
+\end{tabular}                                                
+\label{table:MyTableLabel}                                   
+\end{table}                                                  
+\begin{table}[!htbp]                                          
+\centering                                                    
+\caption{The bias and variance of finite dependence estimator}
+\begin{tabular}{l|rrr}                                        
+\hline                                                        
+ & 100 & 1000 & 10000 \\                                      
+\hline                                                        
+$\theta_0^{VP}$ & 0.521939 & 0.506749 & 0.509216 \\           
+ & (0.0529) & (0.0041) & (0.0004) \\                          
+$\theta_1^{VP}$ & 0.015105 & 0.004755 & 0.002535 \\           
+ & (0.0071) & (0.0008) & (0.0001) \\                          
+$\theta_2^{VP}$ & 0.008315 & 0.004653 & 0.003347 \\           
+ & (0.0041) & (0.0004) & (0.0000) \\                          
+$\theta_0^{FC}$ & 1.714936 & 1.647806 & 1.649346 \\           
+ & (0.3514) & (0.0251) & (0.0025) \\                          
+$\theta_1^{FC}$ & 0.000082 & 0.001747 & 0.000780 \\           
+ & (0.0108) & (0.0010) & (0.0001) \\                          
+$\theta_0^{EC}$ & 0.017714 & 0.000298 & 0.000804 \\           
+ & (0.0527) & (0.0058) & (0.0005) \\                          
+$\theta_1^{EC}$ & 0.021734 & 0.002369 & 0.001987 \\           
+ & (0.1319) & (0.0114) & (0.0012) \\                          
+\hline                                                        
+\end{tabular}                                                 
+\label{table:MyTableLabel}                                    
+\end{table}                                                   
+\begin{table}[!htbp]                                                 
+\centering                                                           
+\caption{The bias and variance of almost finite dependence estimator}
+\begin{tabular}{l|rrr}                                               
+\hline                                                               
+ & 100 & 1000 & 10000 \\                                             
+\hline                                                               
+$\theta_0^{VP}$ & 0.017566 & 0.003976 & 0.000057 \\                  
+ & (0.1153) & (0.0091) & (0.0008) \\                                 
+$\theta_1^{VP}$ & 0.011704 & 0.001516 & 0.000686 \\                  
+ & (0.0070) & (0.0007) & (0.0001) \\                                 
+$\theta_2^{VP}$ & 0.005190 & 0.001580 & 0.000287 \\                  
+ & (0.0041) & (0.0004) & (0.0000) \\                                 
+$\theta_0^{FC}$ & 0.079807 & 0.005914 & 0.000543 \\                  
+ & (0.8802) & (0.0669) & (0.0062) \\                                 
+$\theta_1^{FC}$ & 0.000020 & 0.001664 & 0.000845 \\                  
+ & (0.0109) & (0.0010) & (0.0001) \\                                 
+$\theta_0^{EC}$ & 0.015860 & 0.000146 & 0.000599 \\                  
+ & (0.0435) & (0.0049) & (0.0004) \\                                 
+$\theta_1^{EC}$ & 0.022075 & 0.003196 & 0.001645 \\                  
+ & (0.0930) & (0.0081) & (0.0009) \\                                 
+\hline                                                               
+\end{tabular}                                                        
+\label{table:MyTableLabel}                                           
+\end{table}                                                          
+\begin{table}[!htbp]                                                        
+\centering                                                                  
+\caption{The bias and variance of 2-step almost finite dependence estimator}
+\begin{tabular}{l|rrr}                                                      
+\hline                                                                      
+ & 100 & 1000 & 10000 \\                                                    
+\hline                                                                      
+$\theta_0^{VP}$ & 0.017571 & 0.003972 & 0.000022 \\                         
+ & (0.1153) & (0.0091) & (0.0008) \\                                        
+$\theta_1^{VP}$ & 0.011704 & 0.001516 & 0.000687 \\                         
+ & (0.0070) & (0.0007) & (0.0001) \\                                        
+$\theta_2^{VP}$ & 0.005191 & 0.001581 & 0.000288 \\                         
+ & (0.0041) & (0.0004) & (0.0000) \\                                        
+$\theta_0^{FC}$ & 0.079814 & 0.005910 & 0.000643 \\                         
+ & (0.8802) & (0.0669) & (0.0062) \\                                        
+$\theta_1^{FC}$ & 0.000020 & 0.001664 & 0.000845 \\                         
+ & (0.0109) & (0.0010) & (0.0001) \\                                        
+$\theta_0^{EC}$ & 0.015863 & 0.000145 & 0.000584 \\                         
+ & (0.0435) & (0.0049) & (0.0004) \\                                        
+$\theta_1^{EC}$ & 0.022079 & 0.003195 & 0.001615 \\                         
+ & (0.0930) & (0.0081) & (0.0009) \\                                        
+\hline                                                                      
+\end{tabular}                                                               
+\label{table:MyTableLabel}                                                  
+\end{table}                                                                 
+\begin{table}[!htbp]                               
+\centering                                         
+\caption{The bias and variance of EE estimator}    
+\begin{tabular}{l|rrr}                             
+\hline                                             
+ & 100 & 1000 & 10000 \\                           
+\hline                                             
+$\theta_0^{VP}$ & 0.017863 & 0.003793 & 0.000061 \\
+ & (0.1160) & (0.0091) & (0.0008) \\               
+$\theta_1^{VP}$ & 0.011799 & 0.001492 & 0.000718 \\
+ & (0.0071) & (0.0008) & (0.0001) \\               
+$\theta_2^{VP}$ & 0.005237 & 0.001585 & 0.000284 \\
+ & (0.0041) & (0.0004) & (0.0000) \\               
+$\theta_0^{FC}$ & 0.082942 & 0.005110 & 0.000929 \\
+ & (0.8888) & (0.0661) & (0.0062) \\               
+$\theta_1^{FC}$ & 0.000028 & 0.001683 & 0.000842 \\
+ & (0.0108) & (0.0010) & (0.0001) \\               
+$\theta_0^{EC}$ & 0.018038 & 0.000690 & 0.000390 \\
+ & (0.0527) & (0.0058) & (0.0005) \\               
+$\theta_1^{EC}$ & 0.022312 & 0.001644 & 0.001229 \\
+ & (0.1320) & (0.0114) & (0.0012) \\               
+\hline                                             
+\end{tabular}                                      
+\label{table:MyTableLabel}                         
+\end{table}                                        
+\begin{table}[!htbp]                               
+\centering                                         
+\caption{The bias and variance of HM estimator}    
+\begin{tabular}{l|rrr}                             
+\hline                                             
+ & 100 & 1000 & 10000 \\                           
+\hline                                             
+$\theta_0^{VP}$ & 0.017633 & 0.003824 & 0.000176 \\
+ & (0.1153) & (0.0091) & (0.0008) \\               
+$\theta_1^{VP}$ & 0.011699 & 0.001510 & 0.000695 \\
+ & (0.0070) & (0.0007) & (0.0001) \\               
+$\theta_2^{VP}$ & 0.005187 & 0.001573 & 0.000278 \\
+ & (0.0041) & (0.0004) & (0.0000) \\               
+$\theta_0^{FC}$ & 0.080024 & 0.005508 & 0.001175 \\
+ & (0.8798) & (0.0669) & (0.0062) \\               
+$\theta_1^{FC}$ & 0.000044 & 0.001664 & 0.000842 \\
+ & (0.0109) & (0.0010) & (0.0001) \\               
+$\theta_0^{EC}$ & 0.015859 & 0.000079 & 0.000607 \\
+ & (0.0434) & (0.0049) & (0.0004) \\               
+$\theta_1^{EC}$ & 0.021899 & 0.002959 & 0.001551 \\
+ & (0.0923) & (0.0081) & (0.0009) \\               
+\hline                                             
+\end{tabular}                                      
+\label{table:MyTableLabel}                         
+\end{table}                                        
+\begin{table}[!htbp]                                                             
+\centering                                                                       
+\caption{The averaged time used}                                                 
+\begin{tabular}{cccccc}                                                          
+\hline                                                                           
+ & HM & EE & FD & AFD & AFD2 \\                                                  
+\hline                                                                           
+Average Time & 278.353005 & 3945.595457 & 631.395833 & 319.745424 & 383.386801 \\
+Average Iter & 4.000000 & 97.382000 & 11.168000 & 5.066000 & 7.286000 \\         
+\hline                                                                           
+\end{tabular}                                                                    
+\label{table:MyTableLabel}                                                       
+\end{table}                                                                      

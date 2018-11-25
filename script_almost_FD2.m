@@ -61,7 +61,7 @@ var_HM              = [];
 var_EE              = [];
 
 
-for nM = [100,1000,10000,100000]
+for nM = [100,1000,10000]
 % for gamma_a = 0.5 : 0.5 
     param.nM = nM;
     [F_struct,state] = DDCMixture.statetransition(param);
@@ -192,21 +192,21 @@ for nM = [100,1000,10000,100000]
     var_EE = [var_EE  var(ResultTable_EE )'];
     var_HM = [var_HM  var(ResultTable_HM )'];
 end
-%
+%%
 diarystr = sprintf('diary/AFD_test2_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
 delete(diarystr);
 diary(diarystr);
 
-input.data = [[100,1000,10000,100000]; norm_p;norm_p_modified];
+input.data = [[100,1000,10000]; norm_p;norm_p_modified];
 input.tableRowLabels = {'$\gamma_a$', 'norm before modified', 'norm after modified'}; 
-input.tableColLabels = { '','','','' };
+input.tableColLabels = { '','','' };
 input.tableCaption = 'The norm of the differences in transition densities';
 latexTable(input);
 
 
 input.tableRowLabels = {'$\theta_0^{VP}$', '$\theta_1^{VP}$', ...
     '$\theta_2^{VP}$','$\theta_0^{FC}$','$\theta_1^{FC}$','$\theta_0^{EC}$','$\theta_1^{EC}$'};
-input.tableColLabels = {'100','1000','10000','100000'};
+input.tableColLabels = {'100','1000','10000'};
 % input.tableColLabels =  num2cell(0 : 0.5 : 2.0) ;
 
 
