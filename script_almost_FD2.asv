@@ -272,21 +272,8 @@ diary off;
  
 %% Output another table for bias and variance
 diarystr = sprintf('diary/AFD_test2_compareN_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
-delete(diarystr);
-diary(diarystr);
-input.tableColLabels = {'FD(biased)','AFD(less biased)','AFD2','EE','HM'};
-size = {'100','1000','10000'};
-caption = 'The bias and variance for sample size of ';
-input.tableRowLabels = {'$\theta_0^{VP}$', '$\theta_1^{VP}$', ...
-    '$\theta_2^{VP}$','$\theta_0^{FC}$','$\theta_1^{FC}$','$\theta_0^{EC}$','$\theta_1^{EC}$'};
+
 for i = 1:3
-    input.tableCaption = [caption,size{i} ];
-    bias = [bias_FD(:,i),bias_AFD(:,i),...
-        bias_AFD2(:,i),bias_EE(:,i),bias_HM(:,i)];
-    var  = [var_FD(:,i), var_AFD(:,i),...
-        var_AFD2(:,i), var_EE(:,i), var_HM(:,i) ];
-    input.data = bias;
-    input.variance = var;
-    a = latexVarianceTable(input);
+    bias = [bias_FD(:,i),bias_AFD(:,i),bias_AFD2(:,i),bias_EE(:,i),bias_HM(:,i)]
+    var  = [var_FD(:,i), var_AFD(:,i), var_AFD2(:,i), var_EE, var_HM ];
 end
-diary off;  

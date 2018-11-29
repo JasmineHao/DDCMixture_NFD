@@ -161,7 +161,12 @@ colLabelsExist = isfield(input,'tableColLabels');
 rowLabelsExist = isfield(input,'tableRowLabels');
 cellSize = [2 *numberDataRows+colLabelsExist,numberDataCols+rowLabelsExist];
 C = cell(cellSize);
-C((2 * (0:numberDataRows-1) + 1+colLabelsExist),1+colLabelsExist:end ) = num2cell(input.data);
+for i =1: size(C,1)
+    for j = 1:size(C,2)
+        C{i,j} = '';
+    end
+end
+C((2 * (0:numberDataRows-1) + 1+colLabelsExist),1+colLabelsExist:end ) = cellfun(@(x) {sprintf("(%.4f)",x)},num2cell(input.data));
 C((2 * (1:numberDataRows) +colLabelsExist),1+colLabelsExist:end ) = cellfun(@(x) {sprintf("(%.4f)",x)}, num2cell(input.variance));
 
 if rowLabelsExist
@@ -268,6 +273,7 @@ if input.makeCompleteLatexDocument
     latex = [latexHeader';latex;latexFooter];
 end
 
+%     latex
 % print latex code to console:
 disp(char(latex));
 
