@@ -1,68 +1,23 @@
-param.nMC = 500;
-param.nT = 120;
-% param.nM = 50;	
-param.nGrid = 2;  %number of states for each z_j
-param.beta=0.95; % beta used
-param.n_action = 2;
-param.a_space = [1,0];
-% Exogeneous state variable that determine the exogenous transition
-param.min_z = 0;
-param.max_z = 1;
-
-param.gamma.gamma_a = 5;
-param.min_omega = -1;
-param.max_omega = 1;
-param.gamma.z_0 = 0; %Parameters of z_j transition
-param.gamma.z_1 = 0.6; 
-param.gamma.omega_0 = 0.2; % Parameters of omega transition(productivity)
-param.gamma.omega_1 = 0.9;
-param.gamma.sigma_z = 1;
-param.gamma.sigma_omega = 1;
-
-% Two thetas
-theta.nparam = 7;
-
-theta.VP0 = 1.5;
-theta.VP1 = 1.0;
-theta.VP2 = -1.0;
-theta.FC0 = 0.5;
-theta.FC1 = 1.0;
-theta.EC0 = 1.0;
-theta.EC1 = 1.0;
-theta.pnames = {'VP0','VP1','VP2','FC0','FC1','EC0','EC1'};
-
 if ~exist("conAssign")
     run C:\tomlab\startup.m
 else
     disp("TomLab Initiated");
 end
+addpath(genpath(pwd));
+run gen_param.m
+%% Initialize estimators
+estimator_list = {'FD','AFD','AFD2','HM','EE'};
+statistic_list = {'average','bias','var'};
+norm_p=[];
+norm_p_modified=[];
 
-%%
-average_FD          = [];
-average_AFD         = [];
-average_AFD2        = [];
-bias_FD             = [];
-bias_AFD            = [];
-bias_AFD2           = [];
+for estimator = estimator_list
+    for statistic = statistic_list
+        eval([statistic{1} '_' estimator{1} '=[];']);
+    end
+end
 
-var_FD              = [];
-var_AFD             = [];
-var_AFD2            = [];
-
-norm_p              = [];
-norm_p_modified     = [];
-
-
-average_HM          = [];
-average_EE          = [];
-bias_HM             = [];
-bias_EE             = [];
-var_HM              = [];
-var_EE              = [];
-
-
-for nM = [100,1000,10000]
-% for gamma_a = 0.5 : 0.5 
+for nM = [100]
     param.nM = nM;
     [F_struct,state] = DDCMixture.statetransition(param);
     
@@ -77,15 +32,20 @@ for nM = [100,1000,10000]
     Result = tomRun('snopt', Prob);
     p_star = Result.x_k;
     
+    param.P     = F_struct;
+    param.state = state;
+    param.n_type = 1;
+    param.n_action = 2;
+%     param.n_state = size(param.P{1},2);
     
-    S1.N     = param.nM;
-    S1.T     = param.nT;
-    S1.beta  = param.beta;
-    S1.P     = F_struct;
-    S1.state = state;
-    S1.n_type = 2;
-    S1.n_action = 2;
-    S1.n_state = size(S1.P{1},2);
+%     S1.N     = param.nM;
+%     S1.T     = param.nT;
+%     S1.beta  = param.beta;
+%     S1.P     = F_struct;
+%     S1.state = state;
+%     S1.n_type = 2;
+%     S1.n_action = 2;
+%     S1.n_state = size(S1.P{1},2);
     theta_vec = [theta.VP0,theta.VP1,theta.VP2,theta.FC0,theta.FC1,theta.EC0,theta.EC1]';
     ts = tic;
     for i = 1: param.nMC
@@ -95,26 +55,6 @@ for nM = [100,1000,10000]
     end
     TimeSimulation = toc(ts);
     fprintf('Simulation %d observations of mixture data used %f seconds \n', param.nMC ,TimeSimulation);
-    %     disp(Result.x_k);
-    %     disp(Result.f_k);
-    %     disp(Result.f_0);
-    
-%     ResultTable_FD   = zeros(param.nMC,7);
-%     TimeTable_FD     = zeros(param.nMC,1);
-%     IterTable_FD     = zeros(param.nMC,1);
-% 
-%     ResultTable_AFD   = zeros(param.nMC,7);
-%     TimeTable_AFD     = zeros(param.nMC,1);
-%     IterTable_AFD     = zeros(param.nMC,1);
-% 
-% 
-%     ResultTable_EE   = zeros(param.nMC,7);
-%     TimeTable_EE     = zeros(param.nMC,1);
-%     IterTable_EE     = zeros(param.nMC,1);
-% 
-%     ResultTable_HM   = zeros(param.nMC,7);
-%     TimeTable_HM     = zeros(param.nMC,1);
-%     IterTable_HM     = zeros(param.nMC,1);
     
     norm_p = [norm_p, [Result.f_0]];
     norm_p_modified = [norm_p_modified,[Result.f_k]];
@@ -174,87 +114,31 @@ for nM = [100,1000,10000]
 
     end
 
-    average_FD = [average_FD  mean(abs(ResultTable_FD - theta_vec'))'];
-    average_AFD = [average_AFD  mean(abs(ResultTable_AFD - theta_vec'))'];
-    average_AFD2 = [average_AFD2  mean(abs(ResultTable_AFD2 - theta_vec'))'];
-    average_EE = [average_EE  mean(abs(ResultTable_EE - theta_vec'))'];
-    average_HM = [average_HM  mean(abs(ResultTable_HM - theta_vec'))'];
-
-    bias_FD = [bias_FD abs(mean(ResultTable_FD - theta_vec'))'];
-    bias_AFD = [bias_AFD  abs(mean(ResultTable_AFD - theta_vec'))'];
-    bias_AFD2 = [bias_AFD2  abs(mean(ResultTable_AFD2 - theta_vec'))'];
-    bias_EE = [bias_EE abs(mean(ResultTable_EE - theta_vec'))'];
-    bias_HM = [bias_HM abs(mean(ResultTable_HM - theta_vec'))'];
-    
-    var_FD = [var_FD  var(ResultTable_FD )'];
-    var_AFD = [var_AFD  var(ResultTable_AFD)'];
-    var_AFD2 = [var_AFD2  var(ResultTable_AFD2)'];
-    var_EE = [var_EE  var(ResultTable_EE )'];
-    var_HM = [var_HM  var(ResultTable_HM )'];
+    % Put into summary
+    for estimator = estimator_list
+        eval(['average_' estimator{1} '=[average_' estimator{1}  ' transpose(mean(abs(ResultTable_' estimator{1} ' - transpose(theta_vec))))]; ']);
+        eval(['bias_' estimator{1} '=[bias_' estimator{1}  ' transpose(abs(mean(ResultTable_' estimator{1} ' - transpose(theta_vec))))]; ']);
+        eval(['var_' estimator{1} '=[var_' estimator{1}  ' transpose(var(ResultTable_' estimator{1} ' - transpose(theta_vec)))]; ']);
+    end
 end
-%%
+%% Diary
 diarystr = sprintf('diary/AFD_test2_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
 delete(diarystr);
 diary(diarystr);
 
-input.data = [[100,1000,10000]; norm_p;norm_p_modified];
-input.tableRowLabels = {'$\gamma_a$', 'norm before modified', 'norm after modified'}; 
-input.tableColLabels = { '','','' };
-input.tableCaption = 'The norm of the differences in transition densities';
-latexTable(input);
 
-
+% Bias and Variance Table
 input.tableRowLabels = {'$\theta_0^{VP}$', '$\theta_1^{VP}$', ...
     '$\theta_2^{VP}$','$\theta_0^{FC}$','$\theta_1^{FC}$','$\theta_0^{EC}$','$\theta_1^{EC}$'};
-input.tableColLabels = {'100','1000','10000'};
-% input.tableColLabels =  num2cell(0 : 0.5 : 2.0) ;
+input.tableColLabels = {'0','0.5','1.0','1.5','2.0'};
 
 
-% input.data = average_FD;
-% input.tableCaption = 'The average deviation of finite dependence estimator';
-% latexTable(input);
-% 
-% input.data = average_AFD;
-% input.tableCaption = 'The average deviation of almost finite dependence estimator';
-% latexTable(input);
-% 
-% input.data = average_EE;
-% input.tableCaption = 'The average deviation of EE estimator';
-% latexTable(input);
-% 
-% input.data = average_HM;
-% input.tableCaption = 'The average deviation of HM dependence estimator';
-% latexTable(input);
-
-
-
-input.data    = bias_FD;
-input.variance= var_FD;
-input.tableCaption = 'The bias and variance of finite dependence estimator';
-latexVarianceTable(input);
-
-
-input.data    = bias_AFD;
-input.variance= var_AFD;
-input.tableCaption = 'The bias and variance of almost finite dependence estimator';
-latexVarianceTable(input);
-
-
-input.data    = bias_AFD2;
-input.variance= var_AFD2;
-input.tableCaption = 'The bias and variance of 2-step almost finite dependence estimator';
-latexVarianceTable(input);
-
-input.data    = bias_EE;
-input.variance= var_EE;
-input.tableCaption = 'The bias and variance of EE estimator';
-latexVarianceTable(input);
-
-input.data    = bias_HM;
-input.variance= var_HM;
-input.tableCaption = 'The bias and variance of HM estimator';
-latexVarianceTable(input);
-
+for estimator = estimator_list
+    eval(['input.data  = bias_' estimator{1} ';']);
+    eval(['input.variance= var_' estimator{1} ';']);
+    input.tableCaption = ['The bias and variance of ' estimator{1} ' estimator'];
+    latexVarianceTable(input);
+end
 
 average_time = [mean(TimeTable_HM),mean(TimeTable_EE),mean(TimeTable_FD),mean(TimeTable_AFD),mean(TimeTable_AFD2);
                 mean(IterTable_HM),mean(IterTable_EE),mean(IterTable_FD),mean(IterTable_AFD),mean(IterTable_AFD2)];
@@ -265,28 +149,5 @@ input.tableCaption = 'The averaged time used';
 latexTable(input);
 diary off;
 
-% Prob = conAssign(f, g, H, HessPattern, x_L, x_U, Name, x_0, ...
-%                             pSepFunc, fLowBnd, ...
-%                             A, b_L, b_U, c, dc, d2c, ConsPattern, c_L, c_U, ...
-%                             x_min, x_max, f_opt, x_opt);
  
-%% Output another table for bias and variance
-diarystr = sprintf('diary/AFD_test2_compareN_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
-delete(diarystr);
-diary(diarystr);
-input.tableColLabels = {'FD(biased)','AFD(less biased)','AFD2','EE','HM'};
-size = {'100','1000','10000'};
-caption = 'The bias and variance for sample size of ';
-input.tableRowLabels = {'$\theta_0^{VP}$', '$\theta_1^{VP}$', ...
-    '$\theta_2^{VP}$','$\theta_0^{FC}$','$\theta_1^{FC}$','$\theta_0^{EC}$','$\theta_1^{EC}$'};
-for i = 1:3
-    input.tableCaption = [caption,size{i} ];
-    bias = [bias_FD(:,i),bias_AFD(:,i),...
-        bias_AFD2(:,i),bias_EE(:,i),bias_HM(:,i)];
-    var  = [var_FD(:,i), var_AFD(:,i),...
-        var_AFD2(:,i), var_EE(:,i), var_HM(:,i) ];
-    input.data = bias;
-    input.variance = var;
-    a = latexVarianceTable(input);
-end
 diary off;  

@@ -6,6 +6,7 @@ param.nGrid = 2;  %number of states for each z_j
 param.beta=0.95; % beta used
 param.n_action = 2;
 param.a_space = [1,0];
+param.n_state = param.nGrid^5;
 % Exogeneous state variable that determine the exogenous transition
 param.min_z = 0;
 param.max_z = 1;
@@ -32,3 +33,6 @@ theta.pnames = {'VP0','VP1','VP2','FC0','FC1','EC0','EC1'};
 
 %system and MC parameters
 param.MC=1;					  %number of MC iterations
+param.n_type=1;
+param.N=param.nM;
+param.T=param.nT;

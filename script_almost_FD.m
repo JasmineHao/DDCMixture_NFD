@@ -18,7 +18,7 @@ for estimator = estimator_list
 end
 
 for gamma_a = 0 : 0.5 : 2.0
-    
+% for gamma_a = 2.0 : 0.5 : 3.0
      param.gamma.gamma_a = gamma_a;
     [F_struct,state] = DDCMixture.statetransition(param); %Generate
     
@@ -34,19 +34,20 @@ for gamma_a = 0 : 0.5 : 2.0
     p_star = Result.x_k;
     
     
-    S1.N     = param.nM;
-    S1.T     = param.nT;
-    S1.beta  = param.beta;
-    S1.P     = F_struct;
-    S1.state = state;
-    S1.n_type = 2;
-    S1.n_action = 2;
-    S1.n_state = size(S1.P{1},2);
+%     S1.N     = param.nM;
+%     S1.T     = param.nT;
+%     S1.beta  = param.beta;
+    param.P     = F_struct;
+    param.state = state;
+    param.n_type = 1;
+    param.n_action = 2;
+%     param.n_state = size(S1.P{1},2);
+    
     theta_vec = [theta.VP0,theta.VP1,theta.VP2,theta.FC0,theta.FC1,theta.EC0,theta.EC1]';
     ts = tic;
     for i = 1: param.nMC
         [datasim.at,datasim.yt,datasim.zt] = ...
-            DDCMixture.simdata(theta_vec,S1,param.nT,param.nM);
+            DDCMixture.simdata(theta_vec,param,param.nT,param.nM);
         Data{i} = datasim;
     end
     TimeSimulation = toc(ts);
@@ -65,17 +66,32 @@ for gamma_a = 0 : 0.5 : 2.0
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);
         datasim = Data{i};
         
+%         for estimator = estimator_list
+%             ts = tic;
+%             opt.method = estimator{1};
+%             switch opt.method 
+%                 case 'FD'
+%                     [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_default,opt);
+%                 otherwise
+%                     [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
+%             end
+%             TimeEstimation =  toc(ts);
+%             eval(['ResultTable_' estimator{1} '(i,:) = theta_hat;']);
+%             eval(['IterTable_' estimator{1} '(i) = iter;']);
+%             eval(['TimeTable_' estimator{1} '(i) = TimeEstimation;']);  
+%         end
+% %       
         ts = tic;
-        opt.method = 'EE';
-        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,S1,theta_vec0,p_star,opt);
+        opt.method = 'EE'; opt.max_iter=1000; %The sequential version
+        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
         ResultTable_EE(i,:) = theta_hat;
         IterTable_EE(i) = iter;
         TimeTable_EE(i) = TimeEstimation;    
 
         ts = tic;
-        opt.method = 'HM';
-        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,S1,theta_vec0,p_star,opt);
+        opt.method = 'HM';opt.max_iter=1000;
+        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
         ResultTable_HM(i,:) = theta_hat;
         IterTable_HM(i) = iter;
@@ -83,8 +99,8 @@ for gamma_a = 0 : 0.5 : 2.0
 
         
         ts = tic;
-        opt.method = 'FD';
-        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,S1,theta_vec0,p_default,opt);
+        opt.method = 'FD';opt.max_iter=1000;
+        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_default,opt);
         TimeEstimation =  toc(ts);
         ResultTable_FD(i,:) = theta_hat;
         IterTable_FD(i) = iter;
@@ -92,17 +108,18 @@ for gamma_a = 0 : 0.5 : 2.0
 
 
         ts = tic;
-        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,S1,theta_vec0,p_star,opt);
+        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
         ResultTable_AFD(i,:) = theta_hat;
         IterTable_AFD(i) = iter;
         TimeTable_AFD(i) = TimeEstimation;    
        
 
-        % The two step AFD with error correctoin
+%         The two step AFD with error correctoin
+        
         opt.method = 'AFD2';
-        ts = tic;
-        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,S1,theta_vec0,p_star,opt);
+        ts = tic;opt.max_iter=1000;
+        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
         ResultTable_AFD2(i,:) = theta_hat;
         IterTable_AFD2(i) = iter;
@@ -111,13 +128,13 @@ for gamma_a = 0 : 0.5 : 2.0
     end
     % Put into summary
     for estimator = estimator_list
-        eval(['average_' estimator{1} '=[average_' estimator{1}  ' transpose(mean(abs(ResultTable_' estimator{1} ' - transpose(theta_vec))))] ']);
-        eval(['bias_' estimator{1} '=[bias_' estimator{1}  ' transpose(abs(mean(ResultTable_' estimator{1} ' - transpose(theta_vec))))] ']);
-        eval(['var_' estimator{1} '=[var_' estimator{1}  ' transpose(var(ResultTable_' estimator{1} ' - transpose(theta_vec)))] ']);
+        eval(['average_' estimator{1} '=[average_' estimator{1}  ' transpose(mean(abs(ResultTable_' estimator{1} ' - transpose(theta_vec))))]; ']);
+        eval(['bias_' estimator{1} '=[bias_' estimator{1}  ' transpose(abs(mean(ResultTable_' estimator{1} ' - transpose(theta_vec))))]; ']);
+        eval(['var_' estimator{1} '=[var_' estimator{1}  ' transpose(var(ResultTable_' estimator{1} ' - transpose(theta_vec)))]; ']);
     end
 end
-
-diarystr = sprintf('diary/AFD_test1_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
+%%
+diarystr = sprintf('diary/AFD_sequential_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
 % delete(diarystr);
 % diary(diarystr);
 
@@ -128,14 +145,15 @@ input.tableCaption = 'The norm of the differences in transition densities';
 latexTable(input);
 
 
+% Bias and Variance Table
 input.tableRowLabels = {'$\theta_0^{VP}$', '$\theta_1^{VP}$', ...
     '$\theta_2^{VP}$','$\theta_0^{FC}$','$\theta_1^{FC}$','$\theta_0^{EC}$','$\theta_1^{EC}$'};
 input.tableColLabels = {'0','0.5','1.0','1.5','2.0'};
 
 
 for estimator = estimator_list
-    eval(['input.data  = bias_' estimator{1}]);
-    eval(['input.variance= var_' estimator{1}]);
+    eval(['input.data  = bias_' estimator{1} ';']);
+    eval(['input.variance= var_' estimator{1} ';']);
     input.tableCaption = ['The bias and variance of ' estimator{1} ' estimator'];
     latexVarianceTable(input);
 end
