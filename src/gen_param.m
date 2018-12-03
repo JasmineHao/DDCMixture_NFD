@@ -1,5 +1,5 @@
 runInitEV = 1;
-param.nMC = 5;
+param.nMC = 500;
 param.nT = 120;
 param.nM = 50;	
 param.nGrid = 2;  %number of states for each z_j
@@ -36,3 +36,6 @@ param.MC=1;					  %number of MC iterations
 param.n_type=1;
 param.N=param.nM;
 param.T=param.nT;
+
+param_cell = {'$\theta_0^{VP}$', '$\theta_1^{VP}$', ...
+    '$\theta_2^{VP}$','$\theta_0^{FC}$','$\theta_1^{FC}$','$\theta_0^{EC}$','$\theta_1^{EC}$'};

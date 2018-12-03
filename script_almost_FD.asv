@@ -17,8 +17,8 @@ for estimator = estimator_list
     end
 end
 
-% for gamma_a = 0 : 0.5 : 2.0
-for gamma_a = 2.0 : 0.5 : 3.0
+for gamma_a = 0 : 0.5 : 2.0
+% for gamma_a = 2.0 : 0.5 : 3.0
      param.gamma.gamma_a = gamma_a;
     [F_struct,state] = DDCMixture.statetransition(param); %Generate
     
@@ -61,7 +61,7 @@ for gamma_a = 2.0 : 0.5 : 3.0
 
     % for i = 1:param.nMC
     % Method = {'EE','HM','FD','AFD2'}
-    for i = 1:param.nMC
+    parfor i = 1:param.nMC
         opt = struct();
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);
         datasim = Data{i};
@@ -82,7 +82,7 @@ for gamma_a = 2.0 : 0.5 : 3.0
 %         end
 % %       
         ts = tic;
-        opt.method = 'EE';
+        opt.method = 'EE'; opt.max_iter=1000; %The sequential version
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
         ResultTable_EE(i,:) = theta_hat;
@@ -90,7 +90,7 @@ for gamma_a = 2.0 : 0.5 : 3.0
         TimeTable_EE(i) = TimeEstimation;    
 
         ts = tic;
-        opt.method = 'HM';
+        opt.method = 'HM';opt.max_iter=1000;
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
         ResultTable_HM(i,:) = theta_hat;
@@ -99,7 +99,7 @@ for gamma_a = 2.0 : 0.5 : 3.0
 
         
         ts = tic;
-        opt.method = 'FD';
+        opt.method = 'FD';opt.max_iter=1000;
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_default,opt);
         TimeEstimation =  toc(ts);
         ResultTable_FD(i,:) = theta_hat;
@@ -118,7 +118,7 @@ for gamma_a = 2.0 : 0.5 : 3.0
 %         The two step AFD with error correctoin
         
         opt.method = 'AFD2';
-        ts = tic;
+        ts = tic;opt.max_iter=1000;
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
         ResultTable_AFD2(i,:) = theta_hat;
@@ -159,7 +159,10 @@ for estimator = estimator_list
 end
 
 
-
+command_str = '';
+for estimator = estimator_list
+    command_str_time = ['mean(TimeTable_',estimator{1},') '];
+end
 average_time = [mean(TimeTable_HM),mean(TimeTable_EE),mean(TimeTable_FD),mean(TimeTable_AFD),mean(TimeTable_AFD2);
                 mean(IterTable_HM),mean(IterTable_EE),mean(IterTable_FD),mean(IterTable_AFD),mean(IterTable_AFD2)];
 input.data = average_time;

@@ -642,9 +642,12 @@ classdef DDCMixture
             theta_hat = theta_vec;
         end %End of Mixture.sequential_EE
 
-        %--------------------------------------------------------------------------------
+        
+        %------------------------------------------------------------------
+        % **************                                  *****************
         % **************      Single Type Estimation      *****************
-        %--------------------------------------------------------------------------------
+        % **************                                  *****************
+        %------------------------------------------------------------------
         function [logl, p1,ll_1]  =  ll_EE_s(theta_vec,datasim,p1,S1,invF)
             eul = 0.5772156649;
             a = reshape(datasim.at,S1.N*S1.T,1);
@@ -761,13 +764,19 @@ classdef DDCMixture
             p1 = vec(p1);
         end
         
+        
+        function V = bellman_ee(V,pi_1,p1_1,F1,F0,beta)
+         	V = p1_1 .* (pi_1 + log(p1_1) + beta  * F1 * V) + (1-p1_1).* (log(1-p1_1) + beta  * F0 * V);
+        end
+        
+        
         function [theta_hat,iter] = SingleEstimation(datasim,S1,theta_vec0,p_star,opt)
             o1 = optimset('LargeScale','off','Display','off');
             o2 = optimset('LargeScale','off','Display','off','GradObj','on');
 
             
             opt.tol  = 1e-8;
-            opt.max_iter = 100;
+%             opt.max_iter = 100;
             opt.output = 0;
             diff      = 1;
             iter      = 0;
@@ -777,7 +786,7 @@ classdef DDCMixture
                 
                 ll_function   = @DDCMixture.ll_FD_s;
 
-                while (diff > opt.tol)&(iter<opt.max_iter);
+                while (diff > opt.tol)&(iter<opt.max_iter)
                     ts = tic;
                     %STEP 2: Then estimate the theta using the mixture weight
                     f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,p_star)); %Make sure the solver works
@@ -804,58 +813,49 @@ classdef DDCMixture
                 
                 ll_function   = @DDCMixture.ll_FD_s;
                 F_size = size(S1.P{2});
-                F0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
-                size_n_state = S1.n_state * S1.n_action;
-                
-                while (diff > opt.tol)
                     
-                    %STEP 2: Then estimate the theta using the mixture weight
-                    f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,p_star)); %Make sure the solver works
+                %STEP 2: Then estimate the theta using the mixture weight
+                f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,p_star)); %Make sure the solver works
 
-                    theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
-                    if opt.output > 0
-                        fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
-                    end                %STEP3: Update the weight using the theta
-                    %STEP 3: Update weight and q
-                    [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,p_star);
-
-                    diff = max(abs(vec(p1_1) - vec(p1) ));
-
-                    % STEP 4: Update conditional choice probability
-                    theta_vec0 = theta_vec;
-                    p1_1 = p1;
-                    iter = iter + 1;
-                    if iter > opt.max_iter
-                        break;
-                    end
+                theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
+                if opt.output > 0
+                    fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
+                end                %STEP3: Update the weight using the theta
+                
+                % STEP 4: Update conditional choice probability
+                [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,p_star);
+                theta_vec0 = theta_vec; p1_1 = p1;
+                % % V_star = inv(eye(size_n_state) - S1.beta * F0) * (.5772156649 - log(1 - p1)); %use EE to estimate value function
+                F0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
+                F1 = [S1.P{2},zeros(F_size);S1.P{2},zeros(F_size)];
+                size_n_state = S1.n_state * S1.n_action;
+                V_star = zeros(size_n_state,1);
+                pi_1  = DDCMixture.dpidth(S1) * theta_vec;
+                for q = 1:10
+                    V_star = DDCMixture.bellman_ee(V_star,pi_1,p1_1,F1,F0,S1.beta);
                 end
                 
-                
-                
-                V_star = inv(eye(size_n_state) - S1.beta * F0) * (.5772156649 - log(1 - p1)); %use EE to estimate value function
                 diff = inf;
-                while (diff > opt.tol)
-                    
+                while (diff > opt.tol) &(iter<opt.max_iter)
                     %STEP 2: Then estimate the theta using the mixture weight
                     f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,p_star,V_star)); %Make sure the solver works
 
                     theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
                     if opt.output > 0
                         fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
-                    end                %STEP3: Update the weight using the theta
-                    %STEP 3: Update weight and q
-                    [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,p_star);
-
-                    diff = max(abs(vec(p1_1) - vec(p1) ));
-
-                    % STEP 4: Update conditional choice probability
-                    theta_vec0 = theta_vec;
-                    p1_1 = p1;
-                    iter = iter + 1;
-                    if iter > opt.max_iter
-                        break;
                     end
+                    [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,p_star);
+                    diff = max(abs(vec(p1_1) - vec(p1) ));
+                    % STEP 4: Update conditional choice probability
+                    
+                    pi_1  = DDCMixture.dpidth(S1) * theta_vec;
+                    for q = 1:10
+                        V_star = DDCMixture.bellman_ee(V_star,pi_1,p1_1,F1,F0,S1.beta);
+                    end
+                    theta_vec0 = theta_vec; p1_1 = p1;
+                    iter = iter + 1;
                 end
+                
                 
             elseif string(opt.method) == 'EE'
                 F_size = size(S1.P{2});
@@ -866,7 +866,7 @@ classdef DDCMixture
                 ll_function   = @DDCMixture.ll_EE_s;
 %                 fprintf('Solving using Euler Equation\n');
                 
-                while (diff > opt.tol)
+                while (diff > opt.tol) &(iter<opt.max_iter)
                     ts = tic;
                     f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,invF)); 
                     theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
@@ -879,9 +879,6 @@ classdef DDCMixture
                     theta_vec0 = theta_vec;
                     p1_1 = p1;
                     iter = iter + 1;
-                    if iter > opt.max_iter
-                        break;
-                    end
                 end
             
             elseif string(opt.method) == 'HM'
@@ -892,7 +889,7 @@ classdef DDCMixture
                 ll_function   = @DDCMixture.ll_HM_s;
 %                 fprintf('Solving using Hotz-Miller Inversion\n');
                 
-                while (diff > opt.tol)
+                while (diff > opt.tol) &(iter<opt.max_iter)
                     ts = tic;
                     f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1)); 
                     theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
@@ -905,9 +902,6 @@ classdef DDCMixture
                     theta_vec0 = theta_vec;
                     p1_1 = p1;
                     iter = iter + 1;
-                    if iter > opt.max_iter
-                        break;
-                    end
                 end
                 
             end %end of if for type

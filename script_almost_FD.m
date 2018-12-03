@@ -6,7 +6,7 @@ end
 addpath(genpath(pwd));
 run gen_param.m
 %% Initialize estimators
-estimator_list = {'FD','AFD','AFD2','HM','EE'};
+estimator_list = {'FD','FD2','AFD','AFD2','HM','EE'};
 statistic_list = {'average','bias','var'};
 norm_p=[];
 norm_p_modified=[];
@@ -66,21 +66,6 @@ for gamma_a = 0 : 0.5 : 2.0
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);
         datasim = Data{i};
         
-%         for estimator = estimator_list
-%             ts = tic;
-%             opt.method = estimator{1};
-%             switch opt.method 
-%                 case 'FD'
-%                     [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_default,opt);
-%                 otherwise
-%                     [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
-%             end
-%             TimeEstimation =  toc(ts);
-%             eval(['ResultTable_' estimator{1} '(i,:) = theta_hat;']);
-%             eval(['IterTable_' estimator{1} '(i) = iter;']);
-%             eval(['TimeTable_' estimator{1} '(i) = TimeEstimation;']);  
-%         end
-% %       
         ts = tic;
         opt.method = 'EE'; opt.max_iter=1000; %The sequential version
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
@@ -125,6 +110,14 @@ for gamma_a = 0 : 0.5 : 2.0
         IterTable_AFD2(i) = iter;
         TimeTable_AFD2(i) = TimeEstimation;    
 
+        opt.method = 'AFD2';
+        ts = tic;opt.max_iter=1000;
+        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_default,opt);
+        TimeEstimation =  toc(ts);
+        ResultTable_FD2(i,:) = theta_hat;
+        IterTable_FD2(i) = iter;
+        TimeTable_FD2(i) = TimeEstimation;    
+
     end
     % Put into summary
     for estimator = estimator_list
@@ -133,10 +126,10 @@ for gamma_a = 0 : 0.5 : 2.0
         eval(['var_' estimator{1} '=[var_' estimator{1}  ' transpose(var(ResultTable_' estimator{1} ' - transpose(theta_vec)))]; ']);
     end
 end
-%%
-diarystr = sprintf('diary/AFD_sequential_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
-% delete(diarystr);
-% diary(diarystr);
+%% Diary Session
+diarystr = sprintf('diary/Table_sequential_gammaa_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
+delete(diarystr);
+diary(diarystr);
 
 input.data = [0 : 0.5 : 2.0; norm_p;norm_p_modified];
 input.tableRowLabels = {'$\gamma_a$', 'norm before modified', 'norm after modified'}; 
@@ -146,8 +139,7 @@ latexTable(input);
 
 
 % Bias and Variance Table
-input.tableRowLabels = {'$\theta_0^{VP}$', '$\theta_1^{VP}$', ...
-    '$\theta_2^{VP}$','$\theta_0^{FC}$','$\theta_1^{FC}$','$\theta_0^{EC}$','$\theta_1^{EC}$'};
+input.tableRowLabels = param_cell;
 input.tableColLabels = {'0','0.5','1.0','1.5','2.0'};
 
 
@@ -159,12 +151,18 @@ for estimator = estimator_list
 end
 
 
+command_str_time = '[';command_str_iter = '[';
+for estimator = estimator_list
+    command_str_time = [command_str_time 'mean(TimeTable_',estimator{1},') '];
+    command_str_iter = [command_str_iter 'mean(IterTable_',estimator{1},') '];
+end
+command_str_time = [command_str_time ']'];command_str_iter = [command_str_iter ']'];
 
-average_time = [mean(TimeTable_HM),mean(TimeTable_EE),mean(TimeTable_FD),mean(TimeTable_AFD),mean(TimeTable_AFD2);
-                mean(IterTable_HM),mean(IterTable_EE),mean(IterTable_FD),mean(IterTable_AFD),mean(IterTable_AFD2)];
+
+average_time = [eval(command_str_time);eval(command_str_iter)];
 input.data = average_time;
-input.tableColLabels = {'HM','EE','FD','AFD','AFD2'};
+input.tableColLabels = estimator_list;
 input.tableRowLabels = {'Average Time','Average Iter'};
 input.tableCaption = 'The averaged time used';
 latexTable(input);
-% diary off;
+diary off;
