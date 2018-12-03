@@ -112,8 +112,8 @@ for gamma_a = 0 : 0.5 : 2.0
     % Put into summary
     for estimator = estimator_list
         eval(['average_' estimator{1} '=[average_' estimator{1}  ' transpose(mean(abs(ResultTable_' estimator{1} ' - transpose(theta_vec))))] ']);
-        eval(['bias_' estimator{1} '=[bias_' estimator{1}  ' transpose(abs(mean(ResultTable_' estimator{1} ' - transpose(theta_vec))))] ']);
-        eval(['var_' estimator{1} '=[var_' estimator{1}  ' transpose(var(ResultTable_' estimator{1} ' - transpose(theta_vec)))] ']);
+        eval(['bias_' estimator{1} '=[bias_' estimator{1}  ' transpose(abs(mean(ResultTable_' estimator{1} ' - transpose(theta_vec))))] '])
+        eval(['var_' estimator{1} '=[var_' estimator{1}  ' transpose(var(ResultTable_' estimator{1} ' - transpose(theta_vec)))] '])
     end
 end
 
@@ -134,12 +134,32 @@ input.tableColLabels = {'0','0.5','1.0','1.5','2.0'};
 
 
 for estimator = estimator_list
-    eval(['input.data  = bias_' estimator{1}]);
-    eval(['input.variance= var_' estimator{1}]);
-    input.tableCaption = ['The bias and variance of ' estimator{1} ' estimator'];
+    einput.data    = bias_FD;
+    input.variance= var_FD;
+    input.tableCaption = 'The bias and variance of finite dependence estimator';
     latexVarianceTable(input);
 end
 
+input.data    = bias_AFD;
+input.variance= var_AFD;
+input.tableCaption = 'The bias and variance of almost finite dependence estimator';
+latexVarianceTable(input);
+
+
+input.data    = bias_AFD2;
+input.variance= var_AFD2;
+input.tableCaption = 'The bias and variance of 2-step almost finite dependence estimator';
+latexVarianceTable(input);
+
+input.data    = bias_EE;
+input.variance= var_EE;
+input.tableCaption = 'The bias and variance of EE estimator';
+latexVarianceTable(input);
+
+input.data    = bias_HM;
+input.variance= var_HM;
+input.tableCaption = 'The bias and variance of HM estimator';
+latexVarianceTable(input);
 
 
 average_time = [mean(TimeTable_HM),mean(TimeTable_EE),mean(TimeTable_FD),mean(TimeTable_AFD),mean(TimeTable_AFD2);
