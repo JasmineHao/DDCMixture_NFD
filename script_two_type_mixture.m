@@ -1,4 +1,3 @@
-addpath 'C:\Users\Jasmine\Google Drive\miaomiaomiao!\miaomiao_project\EntryExit\MixtureModel_NFD';
 runInitEV = 1;
 %%
 param.nMC = 50;

@@ -5,6 +5,7 @@ else
 end
 addpath(genpath(pwd));
 run gen_param.m
+max_iter=100;
 %% Initialize estimators
 estimator_list = {'FD','FD2','AFD','AFD2','HM','EE'};
 statistic_list = {'average','bias','var'};
@@ -67,7 +68,7 @@ for gamma_a = 0 : 0.5 : 2.0
         datasim = Data{i};
         
         ts = tic;
-        opt.method = 'EE'; opt.max_iter=1000; %The sequential version
+        opt.method = 'EE'; opt.max_iter=max_iter; %The sequential version
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
         ResultTable_EE(i,:) = theta_hat;
@@ -75,7 +76,7 @@ for gamma_a = 0 : 0.5 : 2.0
         TimeTable_EE(i) = TimeEstimation;    
 
         ts = tic;
-        opt.method = 'HM';opt.max_iter=1000;
+        opt.method = 'HM';opt.max_iter=max_iter;
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
         ResultTable_HM(i,:) = theta_hat;
@@ -84,7 +85,7 @@ for gamma_a = 0 : 0.5 : 2.0
 
         
         ts = tic;
-        opt.method = 'FD';opt.max_iter=1000;
+        opt.method = 'FD';opt.max_iter=max_iter;
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_default,opt);
         TimeEstimation =  toc(ts);
         ResultTable_FD(i,:) = theta_hat;
@@ -103,7 +104,7 @@ for gamma_a = 0 : 0.5 : 2.0
 %         The two step AFD with error correctoin
         
         opt.method = 'AFD2';
-        ts = tic;opt.max_iter=1000;
+        ts = tic;opt.max_iter=max_iter;
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
         ResultTable_AFD2(i,:) = theta_hat;
@@ -111,7 +112,7 @@ for gamma_a = 0 : 0.5 : 2.0
         TimeTable_AFD2(i) = TimeEstimation;    
 
         opt.method = 'AFD2';
-        ts = tic;opt.max_iter=1000;
+        ts = tic;opt.max_iter=max_iter;
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_default,opt);
         TimeEstimation =  toc(ts);
         ResultTable_FD2(i,:) = theta_hat;
@@ -147,6 +148,7 @@ for estimator = estimator_list
     eval(['input.data  = bias_' estimator{1} ';']);
     eval(['input.variance= var_' estimator{1} ';']);
     input.tableCaption = ['The bias and variance of ' estimator{1} ' estimator'];
+    input.tableLabel=['2step' estimator{1}];
     latexVarianceTable(input);
 end
 
