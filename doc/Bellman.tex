@@ -1,0 +1,110 @@
+\documentclass{article}
+
+\usepackage{amssymb,amsmath,amsfonts,eurosym,geometry,ulem,graphicx,caption,color,setspace,sectsty,comment,footmisc,caption,natbib,pdflscape,subfigure,array,hyperref,upgreek,bbm}
+
+\normalem
+
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{setspace}
+\usepackage{ulem}
+\usepackage{textpos}
+\usepackage{changepage}
+\usepackage{url}
+%\usepackage{multirow}
+
+
+%\usepackage{hyperref}
+%\usepackage{xcolor}
+%\hypersetup{colorlinks, linkcolor=blue, citecolor=blue}
+
+%\renewcommand{\sout}[1]{}
+%\renewcommand{\textbf}{}
+%\renewcommand{\bf}{}
+
+\newcommand{\tsout}[1]{\text{\sout{$#1$}}}
+
+
+\tolerance=5000
+\newtheorem{remark}{Remark}
+\def\mb{\mathbf}
+\def\iid{\mathrm{i.i.d. }}
+\def\bs{\boldsymbol}
+\def\tbf{\textbf}
+\def\t{^{\top}}
+\def\bSig{\bs{\Sigma}}
+\newcommand{\mcitet}[1]{\mbox{\citet{#1}}}
+\newcommand{\mcitep}[1]{\mbox{\citep{#1}}}
+
+\DeclareMathOperator{\vect}{vec}
+\DeclareMathOperator{\vecth}{vech}
+
+
+\onehalfspacing
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}
+%\newenvironment{proof}[1][Proof]{\noindent\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+
+\newcommand{\ind}{\mathbbm{1}}
+
+\newcommand{\R}{\mathbb{R}}
+\newtheorem{assumption}{Assumption}
+
+\newtheorem{hyp}{Hypothesis}
+\newtheorem{subhyp}{Hypothesis}[hyp]
+\renewcommand{\thesubhyp}{\thehyp\alph{subhyp}}
+
+\newcommand{\red}[1]{{\color{red} #1}}
+\newcommand{\blue}[1]{{\color{blue} #1}}
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+
+
+\title{The estimators}
+\author{Hiro Kasahara}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\section{Estimators}
+The estimators assume that the conditional choice probabilities are correctly estimated in the first step.
+Therefore, we obtain the consistent estimator of $F$ and $P$: $\hat{F}$ and $\hat{P}$ from the data.
+We define the mappings as $\Phi : \mathcal{B}_{P} \to \mathcal{B}_{V}$ and $\Lambda: \mathcal{B}_{V} \to \mathcal{B}_{P}$.
+The estimators construct different $\Phi$ mappings.
+\begin{itemize}
+  \item Hotz-Miller estimator \begin{equation}
+  \begin{split}
+          \Phi_{HM}(P;\theta) & = (I - \beta F^e(P))^{-1}( u^e(P;\theta) + e^e(P) ), \\
+          \text{ where } F^e(P) & = \left[ \sum_{d \in \mathcal{D} } p(d,z) f(z'|z,d)\right]_{z,z' \in \mathcal{Z}}
+          \text{ and } u^e(P;\theta)  = \left[ \sum_{d \in \mathcal{D} } p(d,z) u(d,z;\theta) \right]_{z \in \mathcal{Z}} \\
+          \Psi_{HM}(P;\theta) & = \Lambda(\Phi_{HM}(P;\theta))
+  \end{split}
+  \end{equation}
+  \item Euler equation estimator \begin{equation}
+  \begin{split}
+          \Phi_{EE}(P;\theta) & = (I - \beta F(0))^{-1}( u(0;\theta) + e(0,P))\\
+          \Psi_{EE}(P;\theta) & = \Lambda(\Phi_{EE}(P;\theta))
+  \end{split}
+  \end{equation}
+  \item Finite Dependence \[ \begin{split}
+    \Psi_{FD}(d,x;\theta,P) = \frac{u(d,x;\theta) + \beta \sum_{x'|x}f(x'|x,d)(u(0,x';\theta) + e(0,x,P) ) }{ \sum_{d'} u(d',x;\theta) + \beta \sum_{x'|x}f(x'|x,d')(u(0,x';\theta) + e(0,x,P) )}
+  \end{split} \]
+\end{itemize}
+\section{Two-step estimators}
+
+\begin{itemize}
+  \item In the first step, obtain non-parametric estimator of the conditional choice probabilities $\hat{p}(d,x)$.
+  \item In the second step, use the maximum likelihood estimator and obtain $\hat{\theta} = \arg \max_{\theta} \sum_{i=1}^N \sum_{t=1}^T \Psi(d_{it},x_{it},\theta,\hat{P})$.
+\end{itemize}
+\end{document}
