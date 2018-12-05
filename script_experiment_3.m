@@ -10,9 +10,10 @@ max_iter=1;
 % This experiment mainly shows that as the 
 estimator_list = {'FD','FD2','AFD','AFD2','HM','EE'};
 statistic_list = {'average','bias','var','time','iter'};
-gamma_a_list = [0,1,2,3,4,5];
+gamma_a_list = [0,2,5];
 norm_p=[];
 norm_p_modified=[];
+param.nGrid = 4;  %number of states for each z_j
 
 for estimator = estimator_list
     for statistic = statistic_list
@@ -129,7 +130,9 @@ end
 diarystr = sprintf('diary/Table_2step_gammaa_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
 delete(diarystr);
 diary(diarystr);
-disp(['This experiment uses 2 step estimator with different values of'...
+disp(['This experiment let the state space be very large so that the inversion'...
+     'is time consuming'...   
+    'This experiment uses 2 step estimator with different values of'...
     '$\gamma_a$. The size of the sample is N=100, T=120 with 500 Monte Carlo'...
     'Simulations.']);
 
