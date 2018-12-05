@@ -1,7 +1,7 @@
 runInitEV = 1;
 param.nMC = 500;
 param.nT = 120;
-param.nM = 50;	
+param.nM = 100;	
 param.nGrid = 2;  %number of states for each z_j
 param.beta=0.95; % beta used
 param.n_action = 2;
