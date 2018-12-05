@@ -1,0 +1,187 @@
+This experiment uses 2 step estimator with different values of$\gamma_a$. The size of the sample is N=100, T=120 with 500 Monte CarloSimulations.
+\begin{table}[!htbp]                                         
+\centering                                                   
+\caption{The norm of the differences in transition densities}
+\begin{tabular}{ccc}                                         
+\hline                                                       
+ & 1e+02 & 1e+03 \\                                          
+\hline                                                       
+norm before modified & 1.0267 & 1.0267 \\                    
+norm after modified & 0.0000 & 0.0000 \\                     
+\hline                                                       
+\end{tabular}                                                
+\label{table:2stepEE}                                        
+\end{table}                                                  
+\begin{table}[!htbp]                           
+\centering                                     
+\caption{The bias and variance of FD estimator}
+\begin{tabular}{l|rr}                          
+\hline                                         
+ & 1e+02 & 1e+03 \\                            
+\hline                                         
+$\theta_0^{VP}$ & 0.1890 & 0.1919 \\           
+ & (0.0023) & (0.0002) \\                      
+$\theta_1^{VP}$ & 0.0034 & 0.0029 \\           
+ & (0.0009) & (0.0001) \\                      
+$\theta_2^{VP}$ & 0.0027 & 0.0023 \\           
+ & (0.0006) & (0.0001) \\                      
+$\theta_0^{FC}$ & 0.6070 & 0.6201 \\           
+ & (0.0186) & (0.0015) \\                      
+$\theta_1^{FC}$ & 0.0010 & 0.0009 \\           
+ & (0.0034) & (0.0003) \\                      
+$\theta_0^{EC}$ & 0.0099 & 0.0001 \\           
+ & (0.0047) & (0.0004) \\                      
+$\theta_1^{EC}$ & 0.0154 & 0.0011 \\           
+ & (0.0075) & (0.0008) \\                      
+\hline                                         
+\end{tabular}                                  
+\label{table:2stepFD}                          
+\end{table}                                    
+\begin{table}[!htbp]                            
+\centering                                      
+\caption{The bias and variance of FD2 estimator}
+\begin{tabular}{l|rr}                           
+\hline                                          
+ & 1e+02 & 1e+03 \\                             
+\hline                                          
+$\theta_0^{VP}$ & 0.1916 & 0.1907 \\            
+ & (0.0041) & (0.0004) \\                       
+$\theta_1^{VP}$ & 0.0005 & 0.0010 \\            
+ & (0.0006) & (0.0001) \\                       
+$\theta_2^{VP}$ & 0.0005 & 0.0005 \\            
+ & (0.0005) & (0.0000) \\                       
+$\theta_0^{FC}$ & 0.6201 & 0.6170 \\            
+ & (0.0322) & (0.0029) \\                       
+$\theta_1^{FC}$ & 0.0033 & 0.0016 \\            
+ & (0.0023) & (0.0002) \\                       
+$\theta_0^{EC}$ & 0.0074 & 0.0007 \\            
+ & (0.0046) & (0.0004) \\                       
+$\theta_1^{EC}$ & 0.0076 & 0.0017 \\            
+ & (0.0067) & (0.0007) \\                       
+\hline                                          
+\end{tabular}                                   
+\label{table:2stepFD2}                          
+\end{table}                                     
+\begin{table}[!htbp]                            
+\centering                                      
+\caption{The bias and variance of AFD estimator}
+\begin{tabular}{l|rr}                           
+\hline                                          
+ & 1e+02 & 1e+03 \\                             
+\hline                                          
+$\theta_0^{VP}$ & 0.0004 & 0.0012 \\            
+ & (0.0044) & (0.0004) \\                       
+$\theta_1^{VP}$ & 0.0006 & 0.0001 \\            
+ & (0.0007) & (0.0001) \\                       
+$\theta_2^{VP}$ & 0.0025 & 0.0002 \\            
+ & (0.0006) & (0.0001) \\                       
+$\theta_0^{FC}$ & 0.0113 & 0.0038 \\            
+ & (0.0319) & (0.0026) \\                       
+$\theta_1^{FC}$ & 0.0092 & 0.0001 \\            
+ & (0.0027) & (0.0003) \\                       
+$\theta_0^{EC}$ & 0.0063 & 0.0001 \\            
+ & (0.0046) & (0.0004) \\                       
+$\theta_1^{EC}$ & 0.0058 & 0.0001 \\            
+ & (0.0070) & (0.0007) \\                       
+\hline                                          
+\end{tabular}                                   
+\label{table:2stepAFD}                          
+\end{table}                                     
+\begin{table}[!htbp]                             
+\centering                                       
+\caption{The bias and variance of AFD2 estimator}
+\begin{tabular}{l|rr}                            
+\hline                                           
+ & 1e+02 & 1e+03 \\                              
+\hline                                           
+$\theta_0^{VP}$ & 0.0000 & 0.0010 \\             
+ & (0.0034) & (0.0003) \\                        
+$\theta_1^{VP}$ & 0.0017 & 0.0002 \\             
+ & (0.0006) & (0.0001) \\                        
+$\theta_2^{VP}$ & 0.0010 & 0.0000 \\             
+ & (0.0005) & (0.0000) \\                        
+$\theta_0^{FC}$ & 0.0006 & 0.0027 \\             
+ & (0.0256) & (0.0023) \\                        
+$\theta_1^{FC}$ & 0.0013 & 0.0003 \\             
+ & (0.0023) & (0.0003) \\                        
+$\theta_0^{EC}$ & 0.0084 & 0.0001 \\             
+ & (0.0046) & (0.0004) \\                        
+$\theta_1^{EC}$ & 0.0106 & 0.0003 \\             
+ & (0.0069) & (0.0007) \\                        
+\hline                                           
+\end{tabular}                                    
+\label{table:2stepAFD2}                          
+\end{table}                                      
+\begin{table}[!htbp]                           
+\centering                                     
+\caption{The bias and variance of HM estimator}
+\begin{tabular}{l|rr}                          
+\hline                                         
+ & 1e+02 & 1e+03 \\                            
+\hline                                         
+$\theta_0^{VP}$ & 0.1932 & 0.1940 \\           
+ & (0.0036) & (0.0003) \\                      
+$\theta_1^{VP}$ & 0.0532 & 0.0518 \\           
+ & (0.0007) & (0.0001) \\                      
+$\theta_2^{VP}$ & 0.0527 & 0.0519 \\           
+ & (0.0005) & (0.0001) \\                      
+$\theta_0^{FC}$ & 0.7694 & 0.7730 \\           
+ & (0.0283) & (0.0026) \\                      
+$\theta_1^{FC}$ & 0.0495 & 0.0515 \\           
+ & (0.0026) & (0.0003) \\                      
+$\theta_0^{EC}$ & 0.0075 & 0.0006 \\           
+ & (0.0046) & (0.0004) \\                      
+$\theta_1^{EC}$ & 0.0092 & 0.0001 \\           
+ & (0.0067) & (0.0007) \\                      
+\hline                                         
+\end{tabular}                                  
+\label{table:2stepHM}                          
+\end{table}                                    
+\begin{table}[!htbp]                           
+\centering                                     
+\caption{The bias and variance of EE estimator}
+\begin{tabular}{l|rr}                          
+\hline                                         
+ & 1e+02 & 1e+03 \\                            
+\hline                                         
+$\theta_0^{VP}$ & 0.3177 & 0.3181 \\           
+ & (0.0012) & (0.0001) \\                      
+$\theta_1^{VP}$ & 0.0699 & 0.0685 \\           
+ & (0.0007) & (0.0001) \\                      
+$\theta_2^{VP}$ & 0.0692 & 0.0684 \\           
+ & (0.0006) & (0.0001) \\                      
+$\theta_0^{FC}$ & 1.8370 & 1.8414 \\           
+ & (0.0105) & (0.0010) \\                      
+$\theta_1^{FC}$ & 0.0471 & 0.0493 \\           
+ & (0.0026) & (0.0003) \\                      
+$\theta_0^{EC}$ & 0.0392 & 0.0465 \\           
+ & (0.0044) & (0.0004) \\                      
+$\theta_1^{EC}$ & 0.1067 & 0.1143 \\           
+ & (0.0054) & (0.0005) \\                      
+\hline                                         
+\end{tabular}                                  
+\label{table:2stepEE}                          
+\end{table}                                    
+\begin{table}[!htbp]            
+\centering                      
+\caption{The averaged time used}
+\begin{tabular}{l|rr}           
+\hline                          
+ & 1e+02 & 1e+03 \\             
+\hline                          
+FD & 1.0097 & 6.2078 \\         
+ & (1.0000) & (1.0000) \\       
+FD2 & 1.4938 & 9.9665 \\        
+ & (1.0000) & (1.0000) \\       
+AFD & 1.1717 & 7.3125 \\        
+ & (1.0000) & (1.0000) \\       
+AFD2 & 1.8388 & 12.5521 \\      
+ & (1.0000) & (1.0000) \\       
+HM & 0.8813 & 6.1084 \\         
+ & (1.0000) & (1.0000) \\       
+EE & 0.7562 & 5.7469 \\         
+ & (1.0000) & (1.0000) \\       
+\hline                          
+\end{tabular}                   
+\label{table:2stepEE}           
+\end{table}                     
