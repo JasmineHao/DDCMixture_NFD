@@ -1,4 +1,3 @@
-% Use this experiments as an example
 if ~exist("conAssign")
     run C:\tomlab\startup.m
 else
@@ -6,12 +5,12 @@ else
 end
 addpath(genpath(pwd));
 run gen_param.m
-max_iter=1;
+max_iter=1000;
 %% Initialize estimators
 % This experiment mainly shows that as the 
 estimator_list = {'FD','FD2','AFD','AFD2','HM','EE'};
 statistic_list = {'average','bias','var','time','iter'};
-N_list = [100,1000];
+gamma_a_list = [0,1,2,3,4,5];
 norm_p=[];
 norm_p_modified=[];
 
@@ -21,10 +20,9 @@ for estimator = estimator_list
     end
 end
 
-for n = N_list
+for gamma_a = gamma_a_list
     
-    param.gamma.gamma_a = 5;
-    param.nM=n;param.N=n;
+    param.gamma.gamma_a = gamma_a;
     [F_struct,state] = DDCMixture.statetransition(param); %Generate
     
     F_0 = kron([0,1;0,1],F_struct{2});
@@ -57,9 +55,9 @@ for n = N_list
     norm_p_modified = [norm_p_modified,[Result.f_k]];
     
     theta_vec0 = zeros(7,1);
-    p_default = zeros(64,1);
+    p_default = zeros(param.n_state*param.n_action,1);
 
- 
+%% 
     parfor i = 1:param.nMC
         opt = struct();
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);
@@ -128,7 +126,7 @@ for n = N_list
     end
 end
 %% Diary Session
-diarystr = sprintf('diary/Table_2step_gammaa_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
+diarystr = sprintf('diary/Table_sequential_gammaa_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
 delete(diarystr);
 diary(diarystr);
 disp(['This experiment uses 2 step estimator with different values of'...
@@ -137,21 +135,21 @@ disp(['This experiment uses 2 step estimator with different values of'...
 
 input.data = [norm_p;norm_p_modified];
 input.tableRowLabels = {'norm before modified', 'norm after modified'}; 
-input.tableColLabels = num2cell(N_list);
+input.tableColLabels = num2cell(gamma_a_list);
 input.tableCaption = 'The norm of the differences in transition densities';
 latexTable(input);
 
 
 % Bias and Variance Table
 input.tableRowLabels = param_cell;
-input.tableColLabels = num2cell(N_list);
+input.tableColLabels = num2cell(gamma_a_list);
 
 
 for estimator = estimator_list
     eval(['input.data  = bias_' estimator{1} ';']);
     eval(['input.variance= var_' estimator{1} ';']);
     input.tableCaption = ['The bias and variance of ' estimator{1} ' estimator'];
-    input.tableLabel=['2step' estimator{1}];
+    input.tableLabel=['sequential' estimator{1}];
     latexVarianceTable(input);
 end
 
@@ -165,7 +163,7 @@ command_str_time = [command_str_time ']'];command_str_iter = [command_str_iter '
 
 input.data = eval(command_str_time);
 input.variance = eval(command_str_iter);
-input.tableColLabels = num2cell(N_list);
+input.tableColLabels = num2cell(gamma_a_list);
 input.tableRowLabels = estimator_list;
 input.tableCaption = 'The averaged time used';
 latexVarianceTable(input);
