@@ -55,9 +55,9 @@ for gamma_a = gamma_a_list
     norm_p_modified = [norm_p_modified,[Result.f_k]];
     
     theta_vec0 = zeros(7,1);
-    p_default = zeros(64,1);
+    p_default = zeros(param.n_state*param.n_action,1);
 
- 
+%% 
     parfor i = 1:param.nMC
         opt = struct();
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);

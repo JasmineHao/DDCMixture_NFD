@@ -4,17 +4,17 @@ else
     disp("TomLab Initiated");
 end
 addpath(genpath(pwd));
-run gen_param.m
 max_iter=1;
 %% Initialize estimators
 % This experiment mainly shows that as the 
+run gen_param.m
 estimator_list = {'FD','FD2','AFD','AFD2','HM','EE'};
 statistic_list = {'average','bias','var','time','iter'};
 gamma_a_list = [0,2,5];
 norm_p=[];
 norm_p_modified=[];
 param.nGrid = 4;  %number of states for each z_j
-
+param.n_state=param.nGrid^5;
 for estimator = estimator_list
     for statistic = statistic_list
         eval([statistic{1} '_' estimator{1} '=[];']);
@@ -33,7 +33,7 @@ for gamma_a = gamma_a_list
     
     F_til = F_1 - F_0;
     f = @(x) obj(x,F_til,F_0);
-    Prob = conAssign(f, [], [], [], zeros(64,1), ones(64,1), "Example Problem", zeros(64,1));
+    Prob = conAssign(f, [], [], [], zeros(param.n_state*param.n_action,1), ones(param.n_state*param.n_action,1), "Example Problem",zeros(param.n_state*param.n_action,1));
     Result = tomRun('snopt', Prob);
     p_star = Result.x_k;
     
