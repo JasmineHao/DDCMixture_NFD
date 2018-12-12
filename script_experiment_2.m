@@ -1,3 +1,4 @@
+clear all;
 % Use this experiments as an example
 if ~exist("conAssign")
     run C:\tomlab\startup.m

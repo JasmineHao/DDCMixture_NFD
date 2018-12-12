@@ -1,3 +1,4 @@
+clear all;
 if ~exist("conAssign")
     run C:\tomlab\startup.m
 else
