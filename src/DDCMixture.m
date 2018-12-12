@@ -787,7 +787,7 @@ classdef DDCMixture
                 ll_function   = @DDCMixture.ll_FD_s;
 
                 while (diff > opt.tol)&(iter<opt.max_iter)
-                    ts = tic;
+                    
                     %STEP 2: Then estimate the theta using the mixture weight
                     f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,p_star)); %Make sure the solver works
 

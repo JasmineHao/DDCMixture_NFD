@@ -129,7 +129,7 @@ for n = N_list
     end
 end
 %% Diary Session
-diarystr = sprintf('diary/diary/Table_sequential_N_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
+diarystr = sprintf('diary/Table_sequential_N_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
 delete(diarystr);
 diary(diarystr);
 disp(['This experiment uses sequential estimator with different values of'...
