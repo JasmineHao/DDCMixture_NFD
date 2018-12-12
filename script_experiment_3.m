@@ -8,9 +8,10 @@ max_iter=1;
 %% Initialize estimators
 % This experiment mainly shows that as the
 run gen_param.m
+param.nMC=50;
 estimator_list = {'FD','FD2','AFD','AFD2','HM','EE'};
 statistic_list = {'average','bias','var','time','iter'};
-gamma_a_list = [0,2,5];
+gamma_a_list = [0];
 norm_p=[];
 norm_p_modified=[];
 param.nGrid = 4;  %number of states for each z_j
@@ -56,9 +57,9 @@ for gamma_a = gamma_a_list
     norm_p_modified = [norm_p_modified,[Result.f_k]];
 
     theta_vec0 = zeros(7,1);
-    p_default = zeros(64,1);
+    p_default = zeros(param.n_state*param.n_action,1);
 
-
+%%
     parfor i = 1:param.nMC
         opt = struct();
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);
