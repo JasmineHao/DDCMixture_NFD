@@ -7,6 +7,7 @@ end
 addpath(genpath(pwd));
 run gen_param.m
 max_iter=1000;
+param.nMC=50;
 %% Initialize estimators
 % This experiment mainly shows that as the 
 estimator_list = {'FD','FD2','AFD','AFD2','HM','EE'};
