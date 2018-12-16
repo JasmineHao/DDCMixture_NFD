@@ -52,6 +52,11 @@ for n = N_list
             DDCMixture.simdata(theta_vec,param,param.nT,param.nM);
         Data{i} = datasim;
     end
+    ev=zeros(param.n_state,param.n_action);
+    pi = DDCMixture.dpidth(param) * theta_vec;
+    [p1,ev] = DDCMixture.solveNFXP(ev,pi,param); 
+    param.p1=p1;
+
     TimeSimulation = toc(ts);
     fprintf('Simulation %d observations of mixture data used %f seconds \n', param.nMC ,TimeSimulation);
     

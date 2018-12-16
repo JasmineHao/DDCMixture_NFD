@@ -780,8 +780,15 @@ classdef DDCMixture
             opt.output = 0;
             diff      = 1;
             iter      = 0;
-
-            p1_1 = DDCMixture.estimate_ccp(datasim,S1); %The initial CCP
+            if ~isfield("true_ccp",opt)
+                opt.true_ccp=0;
+            end
+            if opt.true_ccp
+                p1_1 = S1.p_1;
+            else
+                p1_1 = DDCMixture.estimate_ccp(datasim,S1); %The initial CCP
+            end
+            
             if string(opt.method) == 'FD'
                 
                 ll_function   = @DDCMixture.ll_FD_s;

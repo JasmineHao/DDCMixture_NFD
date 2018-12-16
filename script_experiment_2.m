@@ -10,7 +10,7 @@ run gen_param.m
 max_iter=1;
 %% Initialize estimators
 % This experiment mainly shows that as the 
-estimator_list = {'FD','FD2','AFD','AFD2','HM','EE'};
+estimator_list = {'FD','FD2','AFD','AFD2','HM','EE','HM_true','EE_true'};
 statistic_list = {'average','bias','var','time','iter'};
 N_list = [100,1000];
 norm_p=[];
@@ -51,6 +51,11 @@ for n = N_list
             DDCMixture.simdata(theta_vec,param,param.nT,param.nM);
         Data{i} = datasim;
     end
+    ev=zeros(param.n_state,param.n_action);
+    pi = DDCMixture.dpidth(param) * theta_vec;
+    [p1,ev] = DDCMixture.solveNFXP(ev,pi,param); 
+    param.p1=p1;
+
     TimeSimulation = toc(ts);
     fprintf('Simulation %d observations of mixture data used %f seconds \n', param.nMC ,TimeSimulation);
     
@@ -118,6 +123,23 @@ for n = N_list
         IterTable_FD2(i) = iter;
         TimeTable_FD2(i) = TimeEstimation;    
 
+        
+        opt.true_ccp=1;
+        ts = tic;
+        opt.method = 'EE'; opt.max_iter=max_iter; %The sequential version
+        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
+        TimeEstimation =  toc(ts);
+        ResultTable_EE_true(i,:) = theta_hat;
+        IterTable_EE_true(i) = iter;
+        TimeTable_EE_true(i) = TimeEstimation;    
+
+        ts = tic;
+        opt.method = 'HM';opt.max_iter=max_iter;
+        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
+        TimeEstimation =  toc(ts);
+        ResultTable_HM_true(i,:) = theta_hat;
+        IterTable_HM_true(i) = iter;
+        TimeTable_HM_true(i) = TimeEstimation;    
     end
     % Put into summary
     for estimator = estimator_list
