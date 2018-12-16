@@ -782,6 +782,7 @@ classdef DDCMixture
             iter      = 0;
             
             if opt.true_ccp==1
+                opt.true_ccp;
                 p1_1 = S1.p_1;
             else
                 p1_1 = DDCMixture.estimate_ccp(datasim,S1); %The initial CCP
@@ -867,7 +868,6 @@ classdef DDCMixture
                 F0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
                 size_n_state = S1.n_state * S1.n_action;
                 invF =  inv(eye(size_n_state) - S1.beta * F0);
-                p1_1 = ones(S1.n_state,S1.n_action)/S1.n_action;
                 ll_function   = @DDCMixture.ll_EE_s;
 %                 fprintf('Solving using Euler Equation\n');
                 
@@ -890,7 +890,6 @@ classdef DDCMixture
                 F_size = size(S1.P{2});
                 F0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
                 size_n_state = S1.n_state * S1.n_action;
-                p1_1 = ones(S1.n_state,S1.n_action)/S1.n_action;
                 ll_function   = @DDCMixture.ll_HM_s;
 %                 fprintf('Solving using Hotz-Miller Inversion\n');
                 

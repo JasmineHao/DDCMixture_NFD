@@ -65,14 +65,13 @@ for gamma_a = gamma_a_list
     p_default = zeros(64,1);
 
  
-    for i = 1:param.nMC
+    parfor i = 1:param.nMC
         opt = struct();
         
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);
         datasim = Data{i};
         
         opt.true_ccp=0;
-
         ts = tic;
         opt.method = 'EE'; opt.max_iter=max_iter; %The sequential version
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
@@ -141,7 +140,6 @@ for gamma_a = gamma_a_list
         ResultTable_HM_true(i,:) = theta_hat;
         IterTable_HM_true(i) = iter;
         TimeTable_HM_true(i) = TimeEstimation;    
-
     end
     % Put into summary
     for estimator = estimator_list
