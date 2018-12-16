@@ -69,6 +69,7 @@ for n = N_list
  
     parfor i = 1:param.nMC
         opt = struct();
+        opt.true_ccp=0;
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);
         datasim = Data{i};
         

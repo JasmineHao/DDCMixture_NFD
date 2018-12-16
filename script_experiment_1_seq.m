@@ -67,8 +67,9 @@ for gamma_a = gamma_a_list
 
 %%
     parfor i = 1:param.nMC
-        opt.true_ccp=0;
+        
         opt = struct();
+        opt.true_ccp=0;
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);
         datasim = Data{i};
 
