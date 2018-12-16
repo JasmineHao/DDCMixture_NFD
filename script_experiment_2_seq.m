@@ -72,6 +72,8 @@ for n = N_list
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);
         datasim = Data{i};
         
+        opt.true_ccp=0;
+
         ts = tic;
         opt.method = 'EE'; opt.max_iter=max_iter; %The sequential version
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);

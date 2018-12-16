@@ -54,7 +54,7 @@ for n = N_list
     ev=zeros(param.n_state,param.n_action);
     pi = DDCMixture.dpidth(param) * theta_vec;
     [p1,ev] = DDCMixture.solveNFXP(ev,pi,param); 
-    param.p1=p1;
+    param.p_1=p1;
 
     TimeSimulation = toc(ts);
     fprintf('Simulation %d observations of mixture data used %f seconds \n', param.nMC ,TimeSimulation);
@@ -72,6 +72,8 @@ for n = N_list
         datasim = Data{i};
         
         ts = tic;
+        opt.true_ccp=0;
+
         opt.method = 'EE'; opt.max_iter=max_iter; %The sequential version
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
