@@ -1,0 +1,136 @@
+\documentclass{article}
+
+\usepackage{amssymb,amsmath,amsfonts,eurosym,geometry,ulem,graphicx,caption,color,setspace,sectsty,comment,footmisc,caption,natbib,pdflscape,subfigure,array,hyperref,upgreek,bbm}
+
+\normalem
+
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{setspace}
+\usepackage{ulem}
+\usepackage{textpos}
+\usepackage{changepage}
+\usepackage{url}
+%\usepackage{multirow}
+
+
+%\usepackage{hyperref}
+%\usepackage{xcolor}
+%\hypersetup{colorlinks, linkcolor=blue, citecolor=blue}
+
+%\renewcommand{\sout}[1]{}
+%\renewcommand{\textbf}{}
+%\renewcommand{\bf}{}
+
+\newcommand{\tsout}[1]{\text{\sout{$#1$}}}
+
+
+\tolerance=5000
+\newtheorem{remark}{Remark}
+\def\mb{\mathbf}
+\def\iid{\mathrm{i.i.d. }}
+\def\bs{\boldsymbol}
+\def\tbf{\textbf}
+\def\t{^{\top}}
+\def\bSig{\bs{\Sigma}}
+\newcommand{\mcitet}[1]{\mbox{\citet{#1}}}
+\newcommand{\mcitep}[1]{\mbox{\citep{#1}}}
+
+\DeclareMathOperator{\vect}{vec}
+\DeclareMathOperator{\vecth}{vech}
+
+
+\onehalfspacing
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}
+%\newenvironment{proof}[1][Proof]{\noindent\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+
+\newcommand{\ind}{\mathbbm{1}}
+
+\newcommand{\R}{\mathbb{R}}
+\newtheorem{assumption}{Assumption}
+
+\newtheorem{hyp}{Hypothesis}
+\newtheorem{subhyp}{Hypothesis}[hyp]
+\renewcommand{\thesubhyp}{\thehyp\alph{subhyp}}
+
+\newcommand{\red}[1]{{\color{red} #1}}
+\newcommand{\blue}[1]{{\color{blue} #1}}
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\arraybackslash\hspace{0pt}}m{#1}}
+
+
+\title{Solving for optimal weight for almost finite dependent estimator}
+\author{Hiro Kasahara}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+ \section{Finite dependence}
+
+ \begin{proposition}[Characterization of Finite Dependence]
+Suppose that there exists a sequence $\{d_{t+\tau}^*(z)\}_{\tau=0}^{\rho}$ such that  $   (\tilde{\bs{f}}_{d_t^*(z),t}(d,z))\t \prod_{\tau=1}^\rho  \bs{F}_{d_{t+\tau}^*,t+\tau} =\bs{0}$ for all $(d,z)\in\mathcal{D}\times \mathcal{Z}$, then   the model exhibits the  ($\rho+1$)-period finite dependence with
+ \[
+ \tilde{ {v}}_{d_t^*(z),t}(d,z) = \tilde u_{d_t^*(z),t}(d,z) +     (\tilde{\bs{f}}_{d_t^*(z),t}(d,z))\t\sum_{\tau=1}^\rho \beta^{\tau} {\bs{F}} _{d_{t+\tau}^*(z),t+\tau}  \left( \nabla \bar{\bs{e}}^{\bs{P}_{t+1}} + \bs{u}_{d_{t+\tau}^*(z)}  + \bs{e}_{d_{t+\tau}^*(z)} ^{\bs{P}_{t+1}} \right).
+ \]
+ \end{proposition}
+ \cite{Arcidiacono2016}
+
+When the model exhibits finite dependence, given  the initial estimate for $\{\bs{p}_{t+\tau}:\tau=1,...,\rho\}$, the conditional choice probabilities can be evaluated without solving the Bellman equation.
+
+ \tbf{[Add examples for finite dependence here]}
+
+ \begin{lemma}
+ 	The model displays finite dependence if and only if $\left(\bs{\tilde{F}}^T \otimes \bs{\tilde{F}} \right)\text{vec}(\bs{\tilde{P}}) = \text{vec}(-\bs{\tilde{F}} \bs{F_0})$ has a solution $\bs{\tilde{P}}$.
+ \end{lemma}
+ \begin{proof}
+ 	Suppose the model displays finite dependence property, for each $x^{(i)}$, we have
+ 	\[\left(\bs{P_{t}(x^{(i)})} - \bs{P'_{t}(x^{(i)})}  \right)\bs{F(x^{(i)})} \left(\bs{P_{t+1}} \bs{F}  \right) = \bs{0}.
+ 	\]
+ 	Define $\mathcal{K} = \{\bs{D} \in \R^{D+1}, \sum_{i} \bs{D}_i = 0  \} $ as the linear space of vectors that sum up to 0.
+ 	As $\bs{P_{t}}$ and $\bs{P'_{t}}$ are arbitrary, we have that
+ 	\[\bs{D}\bs{F(x^{(i)})} \left(\bs{P_{t+1}} \bs{F}  \right) = \bs{0}.  ~ \forall ~ \bs{P} \in \mathcal{S}\]
+ 	With $\bs{P}\bs{F} \in \mathcal{K}$ as well, we have that $rank(\bs{P}_{t+1}\bs{F}) = 1 $, and $dim ( null(\bs{P}_{t+1}\bs{F}) ) = |\mathcal{X}| - 1 $.
+ 	From the above results, we have that \[ \begin{split}
+ 	\bs{\tilde{F}} \left(\bs{P_{t+1}} \bs{F}  \right) = \bs{0} \\
+ 	\bs{\tilde{F}} \left(\bs{\tilde{P}_{t+1}} \bs{\tilde{F}} + \bs{F_0}  \right) = \bs{0}  . \end{split} \]
+
+ 	Let $A\otimes B$ be the Kronecker product of two matrix $A$ and $B$ and $\text{vec}(A)$ be the vectorization of matrix $A$. Then by the property of vectorization
+ 	$$\left(\bs{\tilde{F}}^T \otimes \bs{\tilde{F}} \right)\text{vec}(\bs{\tilde{P}_{t+1}}) = \text{vec}(-\bs{\tilde{F}} \bs{F_0}).$$
+
+ 	Thus the model  displays finite dependence property if and only if above equation has a suitable solution for $\bs{P_{t+1}}$.
+ \end{proof}
+
+To find the optimal weight that minimizes $\left(\tilde{\bs{F}}^T \otimes \tilde{\bs{F}} \right) (\bs{\tilde{P}_{t+1}}) + \text{vec}(\bs{\tilde{F}} \bs{F_0}) $, we solve the linear equation of $\left(\bs{\tilde{F}}^T \otimes \bs{\tilde{F}} \right)\text{vec}(\bs{\tilde{P}_{t+1}}) = \text{vec}(-\bs{\tilde{F}} \bs{F_0}).$
+
+Note that $vec(\tilde{\bs{P}})$ has many zeros, then we need to select the non-zero rows that corresponds to the conditional choice probabilities.
+
+A conditional choice probabilities $\tilde{\bs{P}} \in \mathcal{P}$ is \[ \begin{split}
+  \tilde{\bs{P}} = \begin{bmatrix}
+ p(1,x^{(1)}) & \ldots & p(D,x^{(1)}) &\ldots & 0 &\ldots &  0  \\
+ \vdots & \ddots & \vdots & \ddots & \vdots & \ddots & \vdots \\
+ 0 & \ldots & 0 & \ldots & p(1,x^{(|\mathcal{X}|)}) & \ldots & p(D,x^{(|\mathcal{X}|)}) \\
+  \end{bmatrix}_{|\mathcal{X}| \times |\mathcal{X}|D}
+\end{split} \]
+(According to wikipedia), if $A=\begin{bmatrix} a & c \\ b & d  \end{bmatrix}$, then $vec(A) = \begin{bmatrix}
+  a \\ b \\ c \\ d
+\end{bmatrix}$.
+The rows that are non-zero in $\tilde{\bs{P}}$ are $\{ k * |D \mathcal{X}| + m |\mathcal{X}| + k + 1 \}$ where $k=0,\ldots,D$,$m=0,\ldots,D$.
+
+Then we can compute the conditional choice probability with OLS using the selected rows.
+However, this may suffer from the fact that, the parameters are not bounded between 0 and 1.
+\bibliographystyle{apalike}
+\bibliography{reference}
+\end{document}
