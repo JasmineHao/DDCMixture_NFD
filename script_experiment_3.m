@@ -34,11 +34,12 @@ for gamma_a = gamma_a_list
     F   = [F_0;F_1];
 
     F_til = F_1 - F_0;
-    f = @(x) obj(x,F_til,F_0);
-    Prob = conAssign(f, [], [], [], zeros(param.n_state*param.n_action,1), ones(param.n_state*param.n_action,1), "Example Problem",zeros(param.n_state*param.n_action,1));
-    Result = tomRun('snopt', Prob);
-    p_star = Result.x_k;
-
+%     f = @(x) obj(x,F_til,F_0);
+%     Prob = conAssign(f, [], [], [], zeros(param.n_state*param.n_action,1), ones(param.n_state*param.n_action,1), "Example Problem",zeros(param.n_state*param.n_action,1));
+%     Result = tomRun('snopt', Prob);
+%     p_star = Result.x_k;
+    p_star = solve_optimal_weight(param,F_struct);
+    
     param.P     = F_struct;
     param.state = state;
     param.n_type = 1;

@@ -64,6 +64,7 @@ disp(f(w2));
 param.nGrid=3;
 param.n_state=param.nGrid^5;
 [F_struct,state] = DDCMixture.statetransition(param); %Generate
+
 x_size=param.n_action*param.n_state;
 d_size=param.n_action-1;
 row_index=[];
