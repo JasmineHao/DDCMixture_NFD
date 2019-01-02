@@ -64,8 +64,8 @@ b = -vec(F_til*F_0);
 A = A(:,row_index');
 %b = b(row_index');
 w1 = inv(A'*A) * A'* b;
-%
+%%
 f = @(x) obj(x,F_til,F_0);
-Prob = conAssign(f, [], [], [], zeros(x_size,1), ones(x_size,1), "Example Problem", zeros(64,1));
+Prob = conAssign(f, [], [], [], zeros(x_size,1), ones(x_size,1), "Example Problem", zeros(x_size,1));
 Result = tomRun('snopt', Prob);
 w2 = (Result.x_k);
