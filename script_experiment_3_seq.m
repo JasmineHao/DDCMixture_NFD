@@ -5,7 +5,7 @@ else
     disp("TomLab Initiated");
 end
 addpath(genpath(pwd));
-max_iter=1;
+max_iter=1000;
 %% Initialize estimators
 % This experiment mainly shows that as the
 run gen_param.m
@@ -156,12 +156,12 @@ for gamma_a = gamma_a_list
     end
 end
 %% Diary Session
-diarystr = sprintf('diary/Table_2step_gammaa_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
+diarystr = sprintf('diary/Table_seq_gammaa_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
 delete(diarystr);
 diary(diarystr);
 disp(['This experiment let the state space be very large so that the inversion'...
      'is time consuming'...
-    'This experiment uses 2 step estimator with different values of'...
+    'This experiment uses sequential estimator with different values of'...
     '$\gamma_a$. The size of the sample is N=100, T=120 with 500 Monte Carlo'...
     'Simulations.']);
 
