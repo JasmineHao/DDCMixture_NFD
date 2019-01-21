@@ -706,7 +706,9 @@ classdef DDCMixture
         
         function [logl, p1,ll_1] =  ll_FD_s(theta_vec,datasim,p1,S1,w_star,V_star)
             %update using finite dependence
-            if ~exist("V_star"); V_star = zeros(S1.n_state * S1.n_action,1); end;
+            if ~exist("V_star"); 
+                V_star = zeros(S1.n_state * S1.n_action,1);
+            end;
             a = reshape(datasim.at,S1.N*S1.T,1);
             z = reshape(datasim.zt,S1.N*S1.T,1);
             y = reshape(datasim.yt,S1.N*S1.T,1);
@@ -717,21 +719,16 @@ classdef DDCMixture
             F_1 = kron([1,0;1,0],S1.P{1});
             F_til = F_1 - F_0;            
             p1 = vec(p1);
-            pi_1       = DDCMixture.dpidth(S1) * theta_vec ;
+            pi_1       = DDCMixture.dpidth(S1) * theta_vec;
             F_star = diag(w_star) * F_til + F_0;
             
-            V1 = 0.577215665  + pi - log(p1) + S1.beta * F_1 * V_star;
+            V1 = 0.577215665  + pi_1 - log(p1) + S1.beta * F_1 * V_star;
             V0 = 0.577215665 - log(1-p1) + S1.beta * F_0 * V_star;
             V = w_star .* V1 + (1 - w_star).* V0;
         
-            % tmp_1 = pi_1 + S1.beta  * kron([1;1],(S1.P{1} * log(1- ccp_1(:,2)) - S1.P{2} * log(1 - ccp_1(:,1)) ));
-            tmp_1 = pi_1 + S1.beta  * F_til * V;
-             
+            tmp_1 = pi_1 + S1.beta  * F_til * V;             
             p1_1 = exp(tmp_1) ./ ( 1 + exp(tmp_1));
-            
             data_p_1 = p1_1(ind);
-            
-               
             ll_1  = sum(reshape([a==1].*log(data_p_1) + [a==2].*log(1 - data_p_1),S1.N,S1.T),2);           
 
             lik = ll_1 ;
@@ -774,15 +771,14 @@ classdef DDCMixture
         function V = bellman_fd(V_star, pi,p1,w_star,F_1,F_0,beta)
             V1 = 0.5772156649015328606065120900824  + pi - log(p1) + beta * F_1 * V_star;
             V0 = 0.5772156649015328606065120900824 - log(1-p1) + beta * F_0 * V_star;
-%             V = w_star .* V1 + (1 - w_star).* V0;
-            V=V0;
+            V = w_star .* V1 + (1 - w_star).* V0;
+%             V=V0;
         end
 
         
         function [theta_hat,iter] = SingleEstimation(datasim,S1,theta_vec0,w_star,opt)
             o1 = optimset('LargeScale','off','Display','off');
             o2 = optimset('LargeScale','off','Display','off','GradObj','on');
-
             
             opt.tol  = 1e-8;
             opt.output = 0;
@@ -824,11 +820,9 @@ classdef DDCMixture
             elseif string(opt.method) == 'FD2'
                 
                 ll_function   = @DDCMixture.ll_FD_s;
-                F_size = size(S1.P{2});
-                    
+                F_size = size(S1.P{2});    
                 %STEP 2: Then estimate the theta using the mixture weight
                 f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,w_star)); %Make sure the solver works
-
                 theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
                 if opt.output > 0
                     fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
@@ -848,15 +842,16 @@ classdef DDCMixture
                 end
                 
                 diff = inf;
+                ll_function   = @DDCMixture.ll_FD_s;
                 while (diff > opt.tol) &(iter<opt.max_iter)
-                    %STEP 2: Then estimate the theta using the mixture weight
-%                     f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,w_star,V_star)); %Make sure the solver works
-                    f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,w_star,V_star)); %Make sure the solver works
+                    %STEP 2: Then estimate the theta using the mixture
+                    %weight
+                    f = @(t_vec)(-ll_function(t_vec,datasim,p1_1,S1,w_star,V_star)); %Make sure the solver works
                     theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
                     if opt.output > 0
                         fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
                     end
-                    [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,w_star);
+                    [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,w_star,V_star);
                     p1_1 = p1; diff = max(abs(vec(p1) - vec(p1_1)));
 %                     diff = max(abs(vec(p1_1) - vec(p1) ));
                     % STEP 4: Update conditional choice probability

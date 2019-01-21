@@ -67,7 +67,7 @@ for gamma_a = gamma_a_list
     p_default = zeros(param.n_state*param.n_action,1);
 
 %%
-    for i = 1:param.nMC
+    parfor i = 1:param.nMC
         
         opt = struct();
         opt.true_ccp=0;
