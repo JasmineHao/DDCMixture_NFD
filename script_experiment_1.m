@@ -7,13 +7,13 @@ end
 addpath(genpath(pwd));
 run gen_param.m
 max_iter=1;
-param.nMC=50;
+param.nMC=100;
 
 %% Initialize estimators
 % This experiment mainly shows that as the 
 estimator_list = {'FD','FD2','AFD','AFD2','HM','EE','HM_true','EE_true'};
 statistic_list = {'average','bias','var','time','iter'};
-gamma_a_list = [0,1,2,3,4,5];
+gamma_a_list = [0,1,2,5];
 norm_p=[];
 norm_p_modified=[];
 
