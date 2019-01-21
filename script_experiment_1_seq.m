@@ -14,7 +14,7 @@ param.nMC=50;
 % This experiment mainly shows that as the
 estimator_list = {'FD','FD2','AFD','AFD2','HM','EE'};
 statistic_list = {'average','bias','var','time','iter'};
-gamma_a_list = [0,1,2,3,4,5];
+gamma_a_list = [0,2,5];
 norm_p=[];
 norm_p_modified=[];
 
@@ -67,7 +67,7 @@ for gamma_a = gamma_a_list
     p_default = zeros(param.n_state*param.n_action,1);
 
 %%
-    parfor i = 1:param.nMC
+    for i = 1:param.nMC
         
         opt = struct();
         opt.true_ccp=0;

@@ -715,15 +715,17 @@ classdef DDCMixture
             
             F_0 = kron([0,1;0,1],S1.P{2});
             F_1 = kron([1,0;1,0],S1.P{1});
-            F_til = F_1 - F_0;
-%             F   = [F_0;F_1];
-            
+            F_til = F_1 - F_0;            
             p1 = vec(p1);
             pi_1       = DDCMixture.dpidth(S1) * theta_vec ;
             F_star = diag(w_star) * F_til + F_0;
-
+            
+            V1 = 0.577215665  + pi - log(p1) + S1.beta * F_1 * V_star;
+            V0 = 0.577215665 - log(1-p1) + S1.beta * F_0 * V_star;
+            V = w_star .* V1 + (1 - w_star).* V0;
+        
             % tmp_1 = pi_1 + S1.beta  * kron([1;1],(S1.P{1} * log(1- ccp_1(:,2)) - S1.P{2} * log(1 - ccp_1(:,1)) ));
-            tmp_1 = pi_1 + S1.beta  * F_til * (  0.577215665 + w_star .* pi_1 - w_star .* log(p1) + (1 - w_star) .* log(1 - p1) + S1.beta * F_star * V_star);
+            tmp_1 = pi_1 + S1.beta  * F_til * V;
              
             p1_1 = exp(tmp_1) ./ ( 1 + exp(tmp_1));
             
@@ -770,9 +772,10 @@ classdef DDCMixture
         end
         
         function V = bellman_fd(V_star, pi,p1,w_star,F_1,F_0,beta)
-            F_til = F_1 - F_0;
-            F_star = diag(w_star) * F_til + F_0;
-         	V = 0.577215665 + w_star .* pi - w_star .* log(p1) + (1 - w_star) .* log(1 - p1) + beta * F_star * V_star;
+            V1 = 0.5772156649015328606065120900824  + pi - log(p1) + beta * F_1 * V_star;
+            V0 = 0.5772156649015328606065120900824 - log(1-p1) + beta * F_0 * V_star;
+%             V = w_star .* V1 + (1 - w_star).* V0;
+            V=V0;
         end
 
         
@@ -782,7 +785,6 @@ classdef DDCMixture
 
             
             opt.tol  = 1e-8;
-%             opt.max_iter = 100;
             opt.output = 0;
             diff      = 1;
             iter      = 0;
@@ -799,10 +801,8 @@ classdef DDCMixture
                 ll_function   = @DDCMixture.ll_FD_s;
 
                 while (diff > opt.tol)&(iter<opt.max_iter)
-                    
                     %STEP 2: Then estimate the theta using the mixture weight
                     f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,w_star)); %Make sure the solver works
-
                     theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
                     if opt.output > 0
                         fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
@@ -857,13 +857,14 @@ classdef DDCMixture
                         fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
                     end
                     [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,w_star);
-                    diff = max(abs(vec(p1_1) - vec(p1) ));
+                    p1_1 = p1; diff = max(abs(vec(p1) - vec(p1_1)));
+%                     diff = max(abs(vec(p1_1) - vec(p1) ));
                     % STEP 4: Update conditional choice probability
                     pi_1  = DDCMixture.dpidth(S1) * theta_vec;
                     for q = 1:10
                         V_star = DDCMixture.bellman_fd(V_star,pi_1,p1_1,w_star,F_1,F_0,S1.beta);
                     end
-                    theta_vec0 = theta_vec; p1_1 = p1;
+                    theta_vec0 = theta_vec; 
                     iter = iter + 1;
                 end
                 
