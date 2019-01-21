@@ -4,6 +4,7 @@ if ~exist("conAssign")
 else
     disp("TomLab Initiated");
 end
+%%
 addpath(genpath(pwd));
 run gen_param.m
 max_iter=1000;
@@ -22,9 +23,9 @@ for estimator = estimator_list
         eval([statistic{1} '_' estimator{1} '=[];']);
     end
 end
-
+%%
 for gamma_a = gamma_a_list
-
+%%
     param.gamma.gamma_a = gamma_a;
     [F_struct,state] = DDCMixture.statetransition(param); %Generate
 
