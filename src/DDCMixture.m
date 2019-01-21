@@ -237,9 +237,9 @@ classdef DDCMixture
 %             p1 = reshape(p1,n_state,2);
             
             F_size = size(S.P{2});
-            F1 = [S.P{1},zeros(F_size);S.P{1},zeros(F_size)];
-            F0 = [zeros(F_size),S.P{2};zeros(F_size),S.P{2}];
-            F_opt = (eye(F_size(1)*2) - S.beta * F1) * inv(eye(F_size(1)*2) - S.beta * F0);
+            F_1 = [S.P{1},zeros(F_size);S.P{1},zeros(F_size)];
+            F_0 = [zeros(F_size),S.P{2};zeros(F_size),S.P{2}];
+            F_opt = (eye(F_size(1)*2) - S.beta * F_1) * inv(eye(F_size(1)*2) - S.beta * F_0);
             RHS = F_opt * (eul - log(1 - p1(:))) + log(p1(:)) - eul ;
             LHS = DDCMixture.dpidth(S);
             X   = LHS(ind,:);
@@ -506,9 +506,9 @@ classdef DDCMixture
                 end
             elseif string(opt.method) == 'EE'
                 F_size = size(S1.P{2});
-                F0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
+                F_0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
                 size_n_state = S1.n_state * S1.n_action;
-                invF =  inv(eye(size_n_state) - S1.beta * F0);
+                invF =  inv(eye(size_n_state) - S1.beta * F_0);
                 p1_1 = ones(S1.n_state,S1.n_action)/S1.n_action;
                 p2_1 = ones(S2.n_state,S2.n_action)/S2.n_action;
                 ll_function   = @DDCMixture.ll_EE;
@@ -704,7 +704,7 @@ classdef DDCMixture
             end
         end
         
-        function [logl, p1,ll_1] =  ll_FD_s(theta_vec,datasim,p1,S1,p_star,V_star)
+        function [logl, p1,ll_1] =  ll_FD_s(theta_vec,datasim,p1,S1,w_star,V_star)
             %update using finite dependence
             if ~exist("V_star"); V_star = zeros(S1.n_state * S1.n_action,1); end;
             a = reshape(datasim.at,S1.N*S1.T,1);
@@ -720,11 +720,11 @@ classdef DDCMixture
             
             p1 = vec(p1);
             pi_1       = DDCMixture.dpidth(S1) * theta_vec ;
-            F_star = diag(p_star) * F_til + F_0;
+            F_star = diag(w_star) * F_til + F_0;
 
             % tmp_1 = pi_1 + S1.beta  * kron([1;1],(S1.P{1} * log(1- ccp_1(:,2)) - S1.P{2} * log(1 - ccp_1(:,1)) ));
-            tmp_1 = pi_1 + S1.beta  * F_til * ( p_star .* pi_1 +   0.577215665 - (1 - p_star) .* log(1 - p1) - p_star .* log(p1) + S1.beta * F_star * V_star);
-            
+            tmp_1 = pi_1 + S1.beta  * F_til * (  0.577215665 + w_star .* pi_1 - w_star .* log(p1) + (1 - w_star) .* log(1 - p1) + S1.beta * F_star * V_star);
+             
             p1_1 = exp(tmp_1) ./ ( 1 + exp(tmp_1));
             
             data_p_1 = p1_1(ind);
@@ -765,12 +765,18 @@ classdef DDCMixture
         end
         
         
-        function V = bellman_ee(V,pi_1,p1_1,F1,F0,beta)
-         	V = p1_1 .* (pi_1 + log(p1_1) + beta  * F1 * V) + (1-p1_1).* (log(1-p1_1) + beta  * F0 * V);
+        function V = bellman_ee(V_star,pi,p1,F_1,F_0,beta)
+         	V = p1 .* (pi - log(p1) + beta  * F_1 * V_star) + (1-p1).* ( beta  * F_0 * V_star - log(1-p1)) + 0.577215665;
         end
         
+        function V = bellman_fd(V_star, pi,p1,w_star,F_1,F_0,beta)
+            F_til = F_1 - F_0;
+            F_star = diag(w_star) * F_til + F_0;
+         	V = 0.577215665 + w_star .* pi - w_star .* log(p1) + (1 - w_star) .* log(1 - p1) + beta * F_star * V_star;
+        end
+
         
-        function [theta_hat,iter] = SingleEstimation(datasim,S1,theta_vec0,p_star,opt)
+        function [theta_hat,iter] = SingleEstimation(datasim,S1,theta_vec0,w_star,opt)
             o1 = optimset('LargeScale','off','Display','off');
             o2 = optimset('LargeScale','off','Display','off','GradObj','on');
 
@@ -795,14 +801,14 @@ classdef DDCMixture
                 while (diff > opt.tol)&(iter<opt.max_iter)
                     
                     %STEP 2: Then estimate the theta using the mixture weight
-                    f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,p_star)); %Make sure the solver works
+                    f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,w_star)); %Make sure the solver works
 
                     theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
                     if opt.output > 0
                         fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
                     end                %STEP3: Update the weight using the theta
                     %STEP 3: Update weight and q
-                    [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,p_star);
+                    [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,w_star);
 
                     diff = max(abs(vec(p1_1) - vec(p1) ));
 
@@ -815,13 +821,13 @@ classdef DDCMixture
                     end
                 end
                 
-            elseif string(opt.method) == 'AFD2'
+            elseif string(opt.method) == 'FD2'
                 
                 ll_function   = @DDCMixture.ll_FD_s;
                 F_size = size(S1.P{2});
                     
                 %STEP 2: Then estimate the theta using the mixture weight
-                f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,p_star)); %Make sure the solver works
+                f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,w_star)); %Make sure the solver works
 
                 theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
                 if opt.output > 0
@@ -829,34 +835,33 @@ classdef DDCMixture
                 end                %STEP3: Update the weight using the theta
                 
                 % STEP 4: Update conditional choice probability
-                [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,p_star);
+                [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,w_star);
                 theta_vec0 = theta_vec; p1_1 = p1;
-                % % V_star = inv(eye(size_n_state) - S1.beta * F0) * (.5772156649 - log(1 - p1)); %use EE to estimate value function
-                F0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
-                F1 = [S1.P{2},zeros(F_size);S1.P{2},zeros(F_size)];
+                % % V_star = inv(eye(size_n_state) - S1.beta * F_0) * (.5772156649 - log(1 - p1)); %use EE to estimate value function
+                F_0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
+                F_1 = [S1.P{2},zeros(F_size);S1.P{2},zeros(F_size)];
                 size_n_state = S1.n_state * S1.n_action;
                 V_star = zeros(size_n_state,1);
                 pi_1  = DDCMixture.dpidth(S1) * theta_vec;
                 for q = 1:10
-                    V_star = DDCMixture.bellman_ee(V_star,pi_1,p1_1,F1,F0,S1.beta);
+                    V_star = DDCMixture.bellman_fd(V_star,pi_1,p1_1,w_star,F_1,F_0,S1.beta);
                 end
                 
                 diff = inf;
                 while (diff > opt.tol) &(iter<opt.max_iter)
                     %STEP 2: Then estimate the theta using the mixture weight
-                    f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,p_star,V_star)); %Make sure the solver works
-
+%                     f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,w_star,V_star)); %Make sure the solver works
+                    f = @(theta_vec)(-ll_function(theta_vec,datasim,p1_1,S1,w_star,V_star)); %Make sure the solver works
                     theta_vec = fmincon(f,theta_vec0,[],[],[],[],[],[],[],o1);
                     if opt.output > 0
                         fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
                     end
-                    [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,p_star);
+                    [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,w_star);
                     diff = max(abs(vec(p1_1) - vec(p1) ));
                     % STEP 4: Update conditional choice probability
-                    
                     pi_1  = DDCMixture.dpidth(S1) * theta_vec;
                     for q = 1:10
-                        V_star = DDCMixture.bellman_ee(V_star,pi_1,p1_1,F1,F0,S1.beta);
+                        V_star = DDCMixture.bellman_fd(V_star,pi_1,p1_1,w_star,F_1,F_0,S1.beta);
                     end
                     theta_vec0 = theta_vec; p1_1 = p1;
                     iter = iter + 1;
@@ -865,9 +870,9 @@ classdef DDCMixture
                 
             elseif string(opt.method) == 'EE'
                 F_size = size(S1.P{2});
-                F0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
+                F_0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
                 size_n_state = S1.n_state * S1.n_action;
-                invF =  inv(eye(size_n_state) - S1.beta * F0);
+                invF =  inv(eye(size_n_state) - S1.beta * F_0);
                 ll_function   = @DDCMixture.ll_EE_s;
 %                 fprintf('Solving using Euler Equation\n');
                 
@@ -888,7 +893,7 @@ classdef DDCMixture
             
             elseif string(opt.method) == 'HM'
                 F_size = size(S1.P{2});
-                F0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
+                F_0 = [zeros(F_size),S1.P{2};zeros(F_size),S1.P{2}];
                 size_n_state = S1.n_state * S1.n_action;
                 ll_function   = @DDCMixture.ll_HM_s;
 %                 fprintf('Solving using Hotz-Miller Inversion\n');

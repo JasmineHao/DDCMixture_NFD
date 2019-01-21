@@ -1,4 +1,3 @@
-% Use this experiments as an example
 clear all;
 if ~exist("conAssign")
     run C:\tomlab\startup.m
@@ -8,12 +7,11 @@ end
 addpath(genpath(pwd));
 run gen_param.m
 max_iter=1000;
-param.nMC=50;
 %% Initialize estimators
 % This experiment mainly shows that as the 
-estimator_list = {'FD','FD2','AFD','AFD2','HM','EE'};
+estimator_list = {'FD','FD2','AFD','AFD2'};
 statistic_list = {'average','bias','var','time','iter'};
-N_list = [100,1000];
+gamma_a_list = [4,5];
 norm_p=[];
 norm_p_modified=[];
 
@@ -23,10 +21,9 @@ for estimator = estimator_list
     end
 end
 
-for n = N_list
+for gamma_a = gamma_a_list
     
-    param.gamma.gamma_a = 5;
-    param.nM=n;param.N=n;
+    param.gamma.gamma_a = gamma_a;
     [F_struct,state] = DDCMixture.statetransition(param); %Generate
     
     F_0 = kron([0,1;0,1],F_struct{2});
@@ -52,11 +49,12 @@ for n = N_list
             DDCMixture.simdata(theta_vec,param,param.nT,param.nM);
         Data{i} = datasim;
     end
+    
     ev=zeros(param.n_state,param.n_action);
     pi = DDCMixture.dpidth(param) * theta_vec;
     [p1,ev] = DDCMixture.solveNFXP(ev,pi,param); 
-    param.p1=p1;
-
+    param.p_1=p1;
+    
     TimeSimulation = toc(ts);
     fprintf('Simulation %d observations of mixture data used %f seconds \n', param.nMC ,TimeSimulation);
     
@@ -66,31 +64,15 @@ for n = N_list
     theta_vec0 = zeros(7,1);
     p_default = zeros(64,1);
 
- 
+ %%
     parfor i = 1:param.nMC
         opt = struct();
-        opt.true_ccp=0;
+        
         fprintf('Estimating sample %d out of %d\n', i, param.nMC);
         datasim = Data{i};
         
         opt.true_ccp=0;
-
-        ts = tic;
-        opt.method = 'EE'; opt.max_iter=max_iter; %The sequential version
-        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
-        TimeEstimation =  toc(ts);
-        ResultTable_EE(i,:) = theta_hat;
-        IterTable_EE(i) = iter;
-        TimeTable_EE(i) = TimeEstimation;    
-
-        ts = tic;
-        opt.method = 'HM';opt.max_iter=max_iter;
-        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
-        TimeEstimation =  toc(ts);
-        ResultTable_HM(i,:) = theta_hat;
-        IterTable_HM(i) = iter;
-        TimeTable_HM(i) = TimeEstimation;    
-
+        
         
         ts = tic;
         opt.method = 'FD';opt.max_iter=max_iter;
@@ -99,9 +81,17 @@ for n = N_list
         ResultTable_FD(i,:) = theta_hat;
         IterTable_FD(i) = iter;
         TimeTable_FD(i) = TimeEstimation;    
-
+        
+        opt.method = 'FD2';
+        ts = tic;opt.max_iter=max_iter;
+        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_default,opt);
+        TimeEstimation =  toc(ts);
+        ResultTable_FD2(i,:) = theta_hat;
+        IterTable_FD2(i) = iter;
+        TimeTable_FD2(i) = TimeEstimation;    
 
         ts = tic;
+        opt.method = 'FD';opt.max_iter=max_iter;
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
         ResultTable_AFD(i,:) = theta_hat;
@@ -119,14 +109,23 @@ for n = N_list
         IterTable_AFD2(i) = iter;
         TimeTable_AFD2(i) = TimeEstimation;    
 
-        opt.method = 'FD2';
-        ts = tic;opt.max_iter=max_iter;
-        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_default,opt);
-        TimeEstimation =  toc(ts);
-        ResultTable_FD2(i,:) = theta_hat;
-        IterTable_FD2(i) = iter;
-        TimeTable_FD2(i) = TimeEstimation;    
 
+        opt.true_ccp=1;
+        ts = tic;
+        opt.method = 'EE'; opt.max_iter=max_iter; %The sequential version
+        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
+        TimeEstimation =  toc(ts);
+        ResultTable_EE_true(i,:) = theta_hat;
+        IterTable_EE_true(i) = iter;
+        TimeTable_EE_true(i) = TimeEstimation;    
+
+        ts = tic;
+        opt.method = 'HM';opt.max_iter=max_iter;
+        [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
+        TimeEstimation =  toc(ts);
+        ResultTable_HM_true(i,:) = theta_hat;
+        IterTable_HM_true(i) = iter;
+        TimeTable_HM_true(i) = TimeEstimation;    
     end
     % Put into summary
     for estimator = estimator_list
@@ -138,30 +137,30 @@ for n = N_list
     end
 end
 %% Diary Session
-diarystr = sprintf('diary/Table_sequential_N_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
+diarystr = sprintf('diary/Table_2step_FD_gammaa_%d_M%d_T%d.txt',param.nGrid,param.nM,param.nT);
 delete(diarystr);
 diary(diarystr);
-disp(['This experiment uses sequential estimator with different values of'...
+disp(['This experiment uses 2 step estimator with different values of'...
     '$\gamma_a$. The size of the sample is N=100, T=120 with 500 Monte Carlo'...
     'Simulations.']);
 
 input.data = [norm_p;norm_p_modified];
 input.tableRowLabels = {'norm before modified', 'norm after modified'}; 
-input.tableColLabels = num2cell(N_list);
+input.tableColLabels = num2cell(gamma_a_list);
 input.tableCaption = 'The norm of the differences in transition densities';
 latexTable(input);
 
 
 % Bias and Variance Table
 input.tableRowLabels = param_cell;
-input.tableColLabels = num2cell(N_list);
+input.tableColLabels = num2cell(gamma_a_list);
 
 
 for estimator = estimator_list
     eval(['input.data  = bias_' estimator{1} ';']);
     eval(['input.variance= var_' estimator{1} ';']);
     input.tableCaption = ['The bias and variance of ' estimator{1} ' estimator'];
-    input.tableLabel=['sequential' estimator{1}];
+    input.tableLabel=['2step' estimator{1}];
     latexVarianceTable(input);
 end
 
@@ -175,7 +174,7 @@ command_str_time = [command_str_time ']'];command_str_iter = [command_str_iter '
 
 input.data = eval(command_str_time);
 input.variance = eval(command_str_iter);
-input.tableColLabels = num2cell(N_list);
+input.tableColLabels = num2cell(gamma_a_list);
 input.tableRowLabels = estimator_list;
 input.tableCaption = 'The averaged time used';
 latexVarianceTable(input);

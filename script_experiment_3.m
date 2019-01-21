@@ -113,7 +113,7 @@ for gamma_a = gamma_a_list
 
 %         The two step AFD with error correctoin
 
-        opt.method = 'AFD2';
+        opt.method = 'FD2';
         ts = tic;opt.max_iter=max_iter;
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_star,opt);
         TimeEstimation =  toc(ts);
@@ -121,7 +121,7 @@ for gamma_a = gamma_a_list
         IterTable_AFD2(i) = iter;
         TimeTable_AFD2(i) = TimeEstimation;
 
-        opt.method = 'AFD2';
+        opt.method = 'FD2';
         ts = tic;opt.max_iter=max_iter;
         [theta_hat,iter] = DDCMixture.SingleEstimation(datasim,param,theta_vec0,p_default,opt);
         TimeEstimation =  toc(ts);
