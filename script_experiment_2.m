@@ -12,7 +12,7 @@ max_iter=1;
 % This experiment mainly shows that as the 
 estimator_list = {'FD','FD2','AFD','AFD2','HM','EE','HM_true','EE_true'};
 statistic_list = {'average','bias','var','time','iter'};
-N_list = [100,1000];
+N_list = [1000];
 norm_p=[];
 norm_p_modified=[];
 
