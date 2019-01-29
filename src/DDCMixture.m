@@ -852,7 +852,7 @@ classdef DDCMixture
                         fprintf('Iteration: %d, Difference: %.4f, Time elapsed: %f Seconds \n',iter,diff,Result.REALtime);
                     end
                     [ll,p1,ll_1] = ll_function(theta_vec,datasim,p1_1,S1,w_star,V_star);
-                    p1_1 = p1; diff = max(abs(vec(p1) - vec(p1_1)));
+                    diff = max(abs(vec(p1) - vec(p1_1))); p1_1 = p1;
 %                     diff = max(abs(vec(p1_1) - vec(p1) ));
                     % STEP 4: Update conditional choice probability
                     pi_1  = DDCMixture.dpidth(S1) * theta_vec;
