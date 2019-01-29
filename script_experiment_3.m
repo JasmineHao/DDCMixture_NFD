@@ -12,7 +12,7 @@ run gen_param.m
 param.nMC=50;
 estimator_list = {'FD','FD2','AFD','AFD2','HM','EE','HM_true','EE_true'};
 statistic_list = {'average','bias','var','time','iter'};
-gamma_a_list = [0,1,2,5];
+gamma_a_list = [0,2,5];
 norm_p=[];
 norm_p_modified=[];
 param.nGrid = 3;  %number of states for each z_j
@@ -34,12 +34,12 @@ for gamma_a = gamma_a_list
     F   = [F_0;F_1];
 
     F_til = F_1 - F_0;
-   
+
 %     Prob = conAssign(f, [], [], [], zeros(param.n_state*param.n_action,1), ones(param.n_state*param.n_action,1), "Example Problem",zeros(param.n_state*param.n_action,1));
 %     Result = tomRun('snopt', Prob);
 %     p_star = Result.x_k;
     p_star = solve_optimal_weight(param,F_struct);
-    
+
     param.P     = F_struct;
     param.state = state;
     param.n_type = 1;
@@ -54,7 +54,7 @@ for gamma_a = gamma_a_list
     end
     ev=zeros(param.n_state,param.n_action);
     pi = DDCMixture.dpidth(param) * theta_vec;
-    [p1,ev] = DDCMixture.solveNFXP(ev,pi,param); 
+    [p1,ev] = DDCMixture.solveNFXP(ev,pi,param);
     param.p_1=p1;
 
     TimeSimulation = toc(ts);
@@ -67,7 +67,7 @@ for gamma_a = gamma_a_list
     f = @(x) obj(x,F_til,F_0);
     norm_p = [norm_p, f(p_default)];
     norm_p_modified = [norm_p_modified,f(p_star)];
-    
+
     theta_vec0 = zeros(7,1);
 
 %%
@@ -136,7 +136,7 @@ for gamma_a = gamma_a_list
         TimeEstimation =  toc(ts);
         ResultTable_EE_true(i,:) = theta_hat;
         IterTable_EE_true(i) = iter;
-        TimeTable_EE_true(i) = TimeEstimation;    
+        TimeTable_EE_true(i) = TimeEstimation;
 
         ts = tic;
         opt.method = 'HM';opt.max_iter=max_iter;
@@ -144,7 +144,7 @@ for gamma_a = gamma_a_list
         TimeEstimation =  toc(ts);
         ResultTable_HM_true(i,:) = theta_hat;
         IterTable_HM_true(i) = iter;
-        TimeTable_HM_true(i) = TimeEstimation;    
+        TimeTable_HM_true(i) = TimeEstimation;
     end
     % Put into summary
     for estimator = estimator_list
