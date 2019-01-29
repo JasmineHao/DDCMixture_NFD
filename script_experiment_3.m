@@ -12,7 +12,7 @@ run gen_param.m
 param.nMC=50;
 estimator_list = {'FD','FD2','AFD','AFD2','HM','EE','HM_true','EE_true'};
 statistic_list = {'average','bias','var','time','iter'};
-gamma_a_list = [0,1,2,3,4];
+gamma_a_list = [0,1,2,5];
 norm_p=[];
 norm_p_modified=[];
 param.nGrid = 3;  %number of states for each z_j
