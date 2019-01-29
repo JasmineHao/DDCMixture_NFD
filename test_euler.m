@@ -25,11 +25,12 @@ for estimator = estimator_list
 end
 %%
 % for gamma_a = gamma_a_list
-    gamma_a = 0;
+    gamma_a = 1;
 
     param.gamma.gamma_a = gamma_a;
     [F_struct,state] = DDCMixture.statetransition(param); %Generate
-
+    
+    f_1 = F_struct{1}; f_0 = F_struct{2};
     F_0 = kron([0,1;0,1],F_struct{2});
     F_1 = kron([1,0;1,0],F_struct{1});
 
@@ -50,20 +51,36 @@ end
     u_1 = pi + 0.5772156649015328606065120900824 - log(p1);
     u_0 = 0.5772156649015328606065120900824 - log(1-p1);
     u_til = u_1 - u_0;
+    u_e = diag(p1) * u_1 + u_0;
     F_e = diag(p1) * F_til + F_0;
-    B_k = [eye(32);-eye(32)]; M_k = inv(B_k' * B_k) * B_k';
+    B_k = [eye(32);-f_0' * inv(f_1')]; M_k = inv(B_k' * B_k) * B_k';
+    
+    disp("TEST1: The condition is sufficiently close to 0");
+    disp(sum(sum(abs(F_til * M_k' - [f_1;f_1]))));
     N_f_til = F_til * M_k'; N_f_0 = F_0 * M_k';
     V_til = -(1/param.beta)* inv(N_f_til'*N_f_til)* N_f_til' * u_til ;
-    
-    disp("Moment Condition 1:");
-    disp("u_til + \beta N_f_til * V_til = 0");
+    disp("TEST2: V_til - ev(:,1) + (f_1\f_0 ) * ev(:,2)");
+    disp(sum(abs(V_til - ev(:,1) + (f_1\f_0 ) * ev(:,2))));
+    disp("Moment Condition 1: u_til + \beta N_f_til * V_til = 0");
     disp(sum(abs(u_til + param.beta * N_f_til * V_til)));
     
-    disp("Use u's to represent V(0)")
-    F_struct{2}*ev(:,2) - inv(eye(32)- F_struct{1}) * (F_struct{1}*u_0(1:32) + u_til(1:32)/param.beta )
+    V_til - ev(:,1) + f_1\f_0 * ev(:,2);
+    ev(:,1) - f_1\f_0 * ev(:,2) + f_1\(u_til(1:32))/param.beta;
+    ev(:,1) - ev(:,2) - u_0(1:32) + u_0(33:64) ;
+    (V_til  - u_0(1:32) + u_0(33:64) + ( f_1\f_0 - eye(32) ) * ev(:,2))
     
-    disp("Equivalence between states");
+    disp("Moment Condition 2: V_til_t = B_k' * [u_0 + beta F_0 M_k' V_til_t+1 ]");
+    disp(sum(abs(V_til - B_k' * (u_0 + param.beta * F_0 * M_k' * V_til))));
     
+    disp(sum(abs(V_til - B_k' * (u_0 + param.beta * F_0 * M_k'  * V_til))));
+    
+    
+    V_til_1 = B_k' * (u_0 + param.beta * F_0 * inv(eye(32)-f_1\f_0)) * (V_til + (1/param.beta)*(u_til(1:32) - u_til(33:64))  );
+    disp("Moment Condition 3: u_til + beta F_til M_k' V_til_t+1");
+    disp(sum(abs(u_til + param.beta * F_til * M_k' * V_til_1)));
+    
+    disp("Combied Moment Condition: ")
+    u_til + param.beta * F_til * M_k' * B_k' * (u_0 + param.beta * F_0 *M_k' * -(1/param.beta)* inv(N_f_til'*N_f_til)* N_f_til' * u_til) ; 
     %% Simulate
     ts = tic; 
     for i = 1: param.nMC
