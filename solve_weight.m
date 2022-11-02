@@ -1,17 +1,16 @@
 clear all;
-if ~exist("conAssign")
-    run C:\tomlab\startup.m
-else
-    disp("TomLab Initiated");
-end
+% if ~exist("conAssign")
+%     run C:\tomlab\startup.m
+% else
+%     disp("TomLab Initiated");
+% end
 addpath(genpath(pwd));
 run gen_param.m
 max_iter=1;
 %%
-gamma_a=1;
+gamma_a=0;
 param.gamma.gamma_a = gamma_a;
 %%
-param.gamma.gamma_a =1;
 param.nGrid=2;
 param.n_state=param.nGrid^5;
 [F_struct,state] = DDCMixture.statetransition(param); %Generate
@@ -30,6 +29,7 @@ F_1 = kron([1,0;1,0],F_struct{1});
 F   = [F_0;F_1];
 F_til = F_1 - F_0;
 
+%%
 % A = kron(F_til',F_til);
 % A = A(:,row_index');
 %b = b(row_index');
@@ -38,6 +38,7 @@ a = F_til';
 b = F_til;
 nrow_b = size(b,2);
 A = [];
+
 for each_ind = row_index
     ind_b = rem(each_ind, nrow_b);
     if ind_b == 0
@@ -49,13 +50,23 @@ for each_ind = row_index
 
     A = [A,kron(a(:,ind_a),b(:,ind_b) )];
 end
-b = -vec(F_til*F_0);
+
+b = [];
+F_til_F_0 = F_til*F_0;
+for each_ind = 1:size(F_til_F_0,1)
+    b = [b, F_til_F_0(each_ind,:)];
+end
+b = b';
+
 w1 = inv(A'*A) * A'* b;
 
+%%
+
+%%
 f = @(x) obj(x,F_til,F_0);
-Prob = conAssign(f, [], [], [], zeros(64,1), ones(64,1), "Example Problem", zeros(64,1));
-Result = tomRun('snopt', Prob);
-w2 = (Result.x_k);
+
+[w2,f_val] = fmincon(f,zeros(64,1),[],[],[],[],1e-6*ones(64,1),(1-1e-6*ones(64,1)));
+
 disp(f(w1));
 disp(f(w2));
 %%

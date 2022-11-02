@@ -1,9 +1,9 @@
 clear all;
-if ~exist("conAssign")
-    run C:\tomlab\startup.m
-else
-    disp("TomLab Initiated");
-end
+% if ~exist("conAssign")
+%     run C:\tomlab\startup.m
+% else
+%     disp("TomLab Initiated");
+% end
 addpath(genpath(pwd));
 run gen_param.m
 max_iter=1;
@@ -35,8 +35,11 @@ for gamma_a = gamma_a_list
     
     F_til = F_1 - F_0;
     f = @(x) obj(x,F_til,F_0);
-    Prob = conAssign(f, [], [], [], zeros(64,1), ones(64,1), "Example Problem", zeros(64,1));
-    Result = tomRun('snopt', Prob);
+    [p_star,f_val] = fmincon(f,zeros(64,1),[],[],[],[],1e-6*ones(64,1),(1-1e-6*ones(64,1)))
+    
+    
+    %Prob = conAssign(f, [], [], [], zeros(64,1), ones(64,1), "Example Problem", zeros(64,1));
+    %Result = tomRun('snopt', Prob);
     p_star = Result.x_k;
     
     param.P     = F_struct;
